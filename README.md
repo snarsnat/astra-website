@@ -1,75 +1,117 @@
-# Astra Security Website
+# Astra Website
 
-A modern, responsive website for Astra Security featuring dark/light mode toggle and elegant design.
+A modern, professional website for Astra - an AI-powered financial analytics platform. Built with a Vercel-inspired design system featuring dark mode, interactive charts, and authentication flows.
 
 ## Features
 
-- **Dark/Light Mode Toggle**: Switch between themes with persistent preference storage
-- **Responsive Design**: Fully responsive across all device sizes
-- **Modern Typography**: Uses Space Grotesk for headings and Luxurious Script for accent text
-- **Interactive Elements**: Smooth animations and hover effects
-- **Human Silhouette Graphic**: Animated glowing human silhouette as the hero graphic
-- **Feature Cards**: Highlight key security features with hover animations
+### 🎨 Design System
+- **Dark/Light Mode Toggle** - Persistent theme preference with smooth transitions
+- **Vercel-inspired UI** - Clean, modern design with professional spacing and typography
+- **Responsive Layout** - Fully responsive across all device sizes
+- **Custom Animations** - Smooth scroll animations and interactive elements
 
-## Design Elements
+### 📊 Interactive Components
+- **Financial Performance Chart** - Animated bar chart showing growth metrics
+- **Authentication Modal** - Login/Signup forms with validation
+- **Pricing Cards** - Interactive pricing plans with selection states
+- **Toast Notifications** - Success/error notifications with auto-dismiss
+- **Smooth Scrolling** - Animated navigation between sections
 
-### Typography
-- **Space Grotesk**: Used for all body text, buttons, and "security that verifies" text
-- **Luxurious Script**: Used exclusively for the "humanity" text in the hero section
+### 🛠️ Technical Features
+- **Vanilla JavaScript** - No frameworks, minimal dependencies
+- **CSS Custom Properties** - Theme variables for easy customization
+- **Local Storage** - Persistent theme and user preferences
+- **Form Validation** - Client-side validation with user feedback
+- **Performance Optimized** - Efficient animations and lazy loading
 
-### Color Scheme
-- **Light Mode**: Clean, professional white/blue palette
-- **Dark Mode**: Deep navy/cyan palette for reduced eye strain
-
-### Layout
-- Header with logo, theme toggle, and auth buttons
-- Hero section with text and human silhouette graphic
-- Features section with three highlight cards
-- Clean footer with links and copyright
-
-## Files Structure
+## Project Structure
 
 ```
 astra-website/
 ├── index.html          # Main HTML file
-├── style.css          # All styles including dark/light mode
-├── script.js          # Interactive functionality
-├── Astra-logo.png     # Main logo
-├── favicon.ico        # Website favicon
-├── package.json       # Project configuration
-└── README.md          # This file
+├── style.css          # All styles (theme, layout, components)
+├── script.js          # All JavaScript functionality
+├── README.md          # This documentation
+└── assets/            # Images and icons (to be added)
 ```
 
-## How to Use
+## Setup Instructions
 
-1. Open `index.html` in any modern web browser
-2. Click the moon/sun icon in the top right to toggle dark/light mode
-3. The theme preference is saved in local storage
-4. Buttons have interactive hover and click effects
+1. **Clone or download** the project files
+2. **Open `index.html`** in a modern web browser
+3. **No build process required** - works directly in the browser
 
 ## Browser Support
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
+- Chrome 60+
+- Firefox 55+
+- Safari 12+
+- Edge 79+
 
-## Development
+## Key Functionality
 
-The website uses vanilla HTML, CSS, and JavaScript with no external dependencies beyond Google Fonts.
+### Theme Toggle
+- Click the sun/moon icon in the header
+- Theme preference saved in localStorage
+- Smooth transitions between themes
 
-### Key CSS Features
-- CSS Custom Properties for theme variables
-- CSS Grid and Flexbox for layout
-- CSS Animations for interactive elements
-- Responsive design with media queries
+### Authentication
+- Click "Get Started" or "Login" buttons
+- Switch between Login and Signup tabs
+- Form validation with real-time feedback
+- Google OAuth simulation
 
-### JavaScript Features
-- Theme preference storage in localStorage
-- System theme detection
-- Interactive button animations
-- Ripple effect on CTA buttons
+### Interactive Elements
+- **Chart Animation**: Bars grow on page load
+- **Pricing Cards**: Click to select plans
+- **Smooth Scrolling**: Click navigation links
+- **Toast Notifications**: Success/error messages
+
+## Customization
+
+### Colors
+Edit the CSS custom properties in `style.css`:
+```css
+:root {
+  --purple-500: #8b5cf6;  /* Primary brand color */
+  --green-500: #22c55e;   /* Success color */
+  /* ... other variables */
+}
+```
+
+### Content
+- Update text content in `index.html`
+- Modify chart data in `script.js` (initChart function)
+- Adjust pricing plans in the pricing section
+
+### Features
+- Add new sections by following existing patterns
+- Extend JavaScript functionality in `script.js`
+- Add new CSS components in `style.css`
+
+## Performance Notes
+
+- **CSS**: All styles in one file for minimal HTTP requests
+- **JavaScript**: Event delegation and efficient DOM manipulation
+- **Images**: Placeholder images used - replace with optimized assets
+- **Animations**: Uses CSS transitions for smooth performance
+
+## Future Enhancements
+
+1. **Backend Integration** - Connect to real authentication API
+2. **Real Data Charts** - Integrate with financial data APIs
+3. **Multi-language Support** - Add internationalization
+4. **PWA Features** - Installable web app with offline support
+5. **Analytics Integration** - Add user tracking and analytics
 
 ## License
 
-© 2024 Astra Security. All rights reserved.
+This project is available for use and modification. Please credit the original design if used publicly.
+
+## Contact
+
+For questions or support, please refer to the documentation or contact the development team.
+
+---
+
+**Note**: This is a frontend demonstration. Backend functionality is simulated with timeouts for demonstration purposes.

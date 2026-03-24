@@ -1,95 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Astra Security</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Luxurious+Script&display=swap" rel="stylesheet">
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Astra Security - Verify Humanity</title>
+ <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><polygon points='16,2 30,28 2,28' fill='%23000'/></svg>">
+ <link rel="stylesheet" href="style.css">
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="light-mode">
-    <header>
-        <div class="header-container">
-            <div class="logo-container">
-                <img src="Astra-logo.png" alt="Astra Security Logo" class="logo">
-            </div>
-            <nav class="nav-container">
-                <div class="theme-toggle">
-                    <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">
-                        <span class="theme-icon">🌙</span>
-                    </button>
-                </div>
-                <button class="nav-btn login-btn">Log In</button>
-                <button class="nav-btn signup-btn">Sign Up</button>
-            </nav>
-        </div>
-    </header>
+<body>
+ <div class="page-wrapper">
+ <header class="header">
+ <div class="header-container">
+ <a href="/" class="logo">
+ <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+ <polygon points="16,2 30,28 2,28" fill="currentColor"/>
+ </svg>
+ <span class="logo-text">Astra</span>
+ </a>
+ <nav class="nav">
+ <a href="#features" class="nav-link">Features</a>
+ <a href="#how-it-works" class="nav-link">How It Works</a>
+ <a href="#pricing" class="nav-link">Pricing</a>
+ <a href="/docs" class="nav-link">Docs</a>
+ </nav>
+ <div class="header-actions">
+ <div class="theme-toggle">
+ <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
+ <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+ <circle cx="12" cy="12" r="5"/>
+ <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+ </svg>
+ <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+ <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+ </svg>
+ </button>
+ </div>
+ <a href="#login" class="btn btn-ghost" id="login-btn">Log In</a>
+ <a href="#signup" class="btn btn-primary" id="signup-btn">Get Started</a>
+ </div>
+ </div>
+ </header>
 
-    <main>
-        <section class="hero">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="security-text">security that verifies</h1>
-                    <h1 class="humanity-text">humanity</h1>
-                    <p class="hero-description">
-                        Advanced protection systems designed to distinguish human from artificial intelligence, 
-                        ensuring authentic interactions in an increasingly automated world.
-                    </p>
-                    <div class="hero-buttons">
-                        <button class="cta-btn primary">Get Started</button>
-                        <button class="cta-btn secondary">Learn More</button>
-                    </div>
-                </div>
-                <div class="hero-graphic">
-                    <div class="human-silhouette">
-                        <div class="silhouette-face"></div>
-                        <div class="silhouette-glow"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
+ <main>
+ <section class="hero">
+ <div class="hero-container">
+ <div class="hero-content">
+ <div class="hero-badge">
+ <span class="badge-dot"></span>
+ <span>Now with 99.9% accuracy rate</span>
+ </div>
+ <h1 class="hero-title">
+ Security that<br>verifies humanity
+ </h1>
+ <p class="hero-description">
+ Advanced protection systems designed to distinguish human from artificial intelligence, ensuring authentic interactions in an increasingly automated world.
+ </p>
+ <div class="hero-actions">
+ <a href="#signup" class="btn btn-large btn-primary">
+ Start Verifying
+ <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+ <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+ </svg>
+ </a>
+ <a href="/docs" class="btn btn-large btn-ghost">
+ View Documentation
+ </a>
+ </div>
+ </div>
+ </div>
+ </section>
 
-        <section class="features">
-            <div class="features-container">
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Advanced Verification</h3>
-                    <p>Sophisticated algorithms that analyze behavioral patterns to verify human presence.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Real-time Protection</h3>
-                    <p>Continuous monitoring and instant response to suspicious activities.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Lightning Fast</h3>
-                    <p>Verification completed in milliseconds without disrupting user experience.</p>
-                </div>
-            </div>
-        </section>
-    </main>
+ <section class="features" id="features">
+ <div class="features-container">
+ <div class="section-header">
+ <span class="section-label">Features</span>
+ <h2 class="section-title">Enterprise-grade verification</h2>
+ <p class="section-description">Everything you need to verify humans and block bots, without the complexity.</p>
+ </div>
+ <div class="features-grid">
+ <div class="feature-card">
+ <div class="feature-icon">
+ <i class="fas fa-shield-alt"></i>
+ </div>
+ <h3>Advanced Verification</h3>
+ <p>Sophisticated algorithms that analyze behavioral patterns to verify human presence without compromising user experience.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon">
+ <i class="fas fa-bolt"></i>
+ </div>
+ <h3>Real-time Protection</h3>
+ <p>Continuous monitoring and instant response to suspicious activities, keeping your platform safe 24/7.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon">
+ <i class="fas fa-tachometer-alt"></i>
+ </div>
+ <h3>Lightning Fast</h3>
+ <p>Verification completed in milliseconds without disrupting user experience or slowing down your conversions.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon">
+ <i class="fas fa-code"></i>
+ </div>
+ <h3>Seamless Integration</h3>
+ <p>Two lines of code to add powerful verification to any platform. REST API and SDKs for every major framework.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon">
+ <i class="fas fa-lock"></i>
+ </div>
+ <h3>Privacy First</h3>
+ <p>No tracking, no fingerprinting, no data collection. We verify humanity without invading privacy.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon">
+ <i class="fas fa-chart-line"></i>
+ </div>
+ <h3>Dashboard & Analytics</h3>
+ <p>Real-time insights into verification attempts, success rates, and threat detection with detailed reporting.</p>
+ </div>
+ </div>
+ </div>
+ </section>
 
-    <footer>
-        <div class="footer-container">
-            <div class="footer-logo">
-                <img src="Astra-logo.png" alt="Astra Security Logo" class="footer-logo-img">
-            </div>
-            <div class="footer-links">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Contact</a>
-                <a href="#">Documentation</a>
-            </div>
-            <div class="footer-copyright">
-                © 2024 Astra Security. All rights reserved.
-            </div>
-        </div>
-    </footer>
+ <section class="how-it-works" id="how-it-works">
+ <div class="how-it-works-container">
+ <div class="section-header">
+ <span class="section-label">How It Works</span>
+ <h2 class="section-title">Simple, Powerful Verification</h2>
+ <p class="section-description">Astra's three-step process to verify humanity and block bots.</p>
+ </div>
+ <div class="steps-container">
+ <div class="step">
+ <div class="step-number">1</div>
+ <div class="step-content">
+ <h3>Integration</h3>
+ <p>Add our lightweight JavaScript snippet to your website or integrate via API. No complex setup required.</p>
+ </div>
+ </div>
+ <div class="step">
+ <div class="step-number">2</div>
+ <div class="step-content">
+ <h3>Verification</h3>
+ <p>Our system analyzes user behavior in real-time, distinguishing humans from bots with 99.9% accuracy.</p>
+ </div>
+ </div>
+ <div class="step">
+ <div class="step-number">3</div>
+ <div class="step-content">
+ <h3>Protection</h3>
+ <p>Block malicious bots while allowing legitimate users through. Get detailed analytics on all verification attempts.</p>
+ </div>
+ </div>
+ </div>
+ <div class="chart-container">
+ <div class="chart">
+ <div class="chart-title">Verification Accuracy Over Time</div>
+ <div class="chart-graph">
+ <div class="chart-bar" style="height: 90%;" data-value="90%"></div>
+ <div class="chart-bar" style="height: 94%;" data-value="94%"></div>
+ <div class="chart-bar" style="height: 96%;" data-value="96%"></div>
+ <div class="chart-bar" style="height: 98%;" data-value="98%"></div>
+ <div class="chart-bar" style="height: 99.9%;" data-value="99.9%"></div>
+ </div>
+ <div class="chart-labels">
+ <span>2022</span>
+ <span>2023</span>
+ <span>2024</span>
+ <span>2025</span>
+ <span>2026</span>
+ </div>
+ </div>
+ <div class="chart-stats">
+ <div class="stat">
+ <div class="stat-number">99.9%</div>
+ <div class="stat-label">Accuracy Rate</div>
+ </div>
+ <div class="stat">
+ <div class="stat-number">&lt;100ms</div>
+ <div class="stat-label">Verification Time</div>
+ </div>
+ <div class="stat">
+ <div class="stat-number">99.99%</div>
+ <div class="stat-label">Uptime</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </section>
 
-    <script src="script.js"></script>
+ <section class="pricing" id="pricing">
+ <div class="pricing-container">
+ <div class="section-header">
+ <span class="section-label">Pricing</span>
+ <h2 class="section-title">Simple, Transparent Pricing</h2>
+ <p class="section-description">Choose the plan that fits your needs. No hidden fees.</p>
+ </div>
+ <div class="pricing-cards">
+ <div class="pricing-card">
+ <div class="pricing-header">
+ <h3>Free</h3>
+ <div class="price">$0<span>/month</span></div>
+ </div>
+ <ul class="pricing-features">
+ <li><i class="fas fa-check"></i> Up to 1,000 verifications/month</li>
+ <li><i class="fas fa-check"></i> Basic bot protection</li>
+ <li><i class="fas fa-check"></i> Standard support</li>
+ <li><i class="fas fa-check"></i> Email reports</li>
+ </ul>
+ <a href="#signup" class="btn btn-outline">Get Started</a>
+ </div>
+ <div class="pricing-card featured">
+ <div class="pricing-badge">Most Popular</div>
+ <div class="pricing-header">
+ <h3>Pro</h3>
+ <div class="price">$99<span>/month</span></div>
+ </div>
+ <ul class="pricing-features">
+ <li><i class="fas fa-check"></i> Up to 50,000 verifications/month</li>
+ <li><i class="fas fa-check"></i> Advanced bot detection</li>
+ <li><i class="fas fa-check"></i> Priority support</li>
+ <li><i class="fas fa-check"></i> Real-time analytics</li>
+ <li><i class="fas fa-check"></i> Custom rules</li>
+ </ul>
+ <a href="#signup" class="btn btn-primary">Get Started</a>
+ </div>
+ <div class="pricing-card">
+ <div class="pricing-header">
+ <h3>Enterprise</h3>
+ <div class="price">Custom</div>
+ </div>
+ <ul class="pricing-features">
+ <li><i class="fas fa-check"></i> Unlimited verifications</li>
+ <li><i class="fas fa-check"></i> AI-powered threat detection</li>
+ <li><i class="fas fa-check"></i> 24/7 dedicated support</li>
+ <li><i class="fas fa-check"></i> Custom integrations</li>
+ <li><i class="fas fa-check"></i> SLA guarantee</li>
+ <li><i class="fas fa-check"></i> On-premise deployment</li>
+ </ul>
+ <a href="#contact" class="btn btn-outline">Contact Sales</a>
+ </div>
+ </div>
+ </div>
+ </section>
+
+ <section class="cta">
+ <div class="cta-container">
+ <h2>Ready to verify humanity?</h2>
+ <p>Start protecting your platform today with enterprise-grade verification.</p>
+ <div class="cta-actions">
+ <a href="#signup" class="btn btn-large btn-dark">Get Started Free</a>
+ <a href="/docs" class="btn btn-large btn-outline">Read Documentation</a>
+ </div>
+ </div>
+ </section>
+ </main>
+
+ <footer class="footer">
+ <div class="footer-container">
+ <div class="footer-main">
+ <div class="footer-brand">
+ <a href="/" class="logo">
+ <svg class="logo-icon" viewBox="0 0 32 32" fill="none">
+ <polygon points="16,2 30,28 2,28" fill="currentColor"/>
+ </svg>
+ <span class="logo-text">Astra</span>
+ </a>
+ <p class="footer-tagline">Security that verifies humanity.</p>
+ </div>
+ <div class="footer-links">
+ <div class="footer-col">
+ <h4>Product</h4>
+ <a href="#features">Features</a>
+ <a href="#how-it-works">How It Works</a>
+ <a href="#pricing">Pricing</a>
+ <a href="/docs">Documentation</a>
+ </div>
+ <div class="footer-col">
+ <h4>Company</h4>
+ <a href="#about">About</a>
+ <a href="#blog">Blog</a>
+ <a href="#careers">Careers</a>
+ <a href="#contact">Contact</a>
+ </div>
+ <div class="footer-col">
+ <h4>Legal</h4>
+ <a href="#privacy">Privacy Policy</a>
+ <a href="#terms">Terms of Service</a>
+ <a href="#security">Security</a>
+ </div>
+ </div>
+ </div>
+ <div class="footer-bottom">
+ <span>© 2026 Astra Security. All rights reserved.</span>
+ <div class="footer-social">
+ <a href="#" aria-label="Twitter">
+ <i class="fab fa-twitter"></i>
+ </a>
+ <a href="#" aria-label="GitHub">
+ <i class="fab fa-github"></i>
+ </a>
+ <a href="#" aria-label="LinkedIn">
+ <i class="fab fa-linkedin"></i>
+ </a>
+ </div>
+ </div>
+ </div>
+ </footer>
+ </div>
+
+ <!-- Login/Signup Modal -->
+ <div class="modal" id="auth-modal">
+ <div class="modal-content">
+ <div class="modal-header">
+ <h3 id="modal-title">Sign In</h3>
+ <button class="modal-close">&times;</button>
+ </div>
+ <div class="modal-body">
+ <div class="auth-tabs">
+ <button class="auth-tab active" data-tab="login">Log In</button>
+ <button class="auth-tab" data-tab="signup">Sign Up</button>
+ </div>
+ <div class="auth-form" id="login-form">
+ <button class="btn btn-google" id="google-login">
+ <i class="fab fa-google"></i>
+ Continue with Google
+ </button>
+ <div class="divider">
+ <span>or</span>
+ </div>
+ <form id="login-email-form">
+ <div class="form-group">
+ <label for="login-email">Email</label>
+ <input type="email" id="login-email" placeholder="you@example.com" required>
+ </div>
+ <div class="form-group">
+ <label for="login-password">Password</label>
+ <input type="password" id="login-password" placeholder="••••••••" required>
+ </div>
+ <button type="submit" class="btn btn-primary">Log In</button>
+ </form>
+ </div>
+ <div class="auth-form" id="signup-form" style="display: none;">
+ <button class="btn btn-google" id="google-signup">
+ <i class="fab fa-google"></i>
+ Continue with Google
+ </button>
+ <div class="divider">
+ <span>or</span>
+ </div>
+ <form id="signup-email-form">
+ <div class="form-group">
+ <label for="signup-email">Email</label>
+ <input type="email" id="signup-email" placeholder="you@example.com" required>
+ </div>
+ <div class="form-group">
+ <label for="signup-password">Password</label>
+ <input type="password" id="signup-password" placeholder="••••••••" required>
+ </div>
+ <div class="form-group">
+ <label for="confirm-password">Confirm Password</label>
+ <input type="password" id="confirm-password" placeholder="••••••••" required>
+ </div>
+ <button type="submit" class="btn btn-primary">Create Account</button>
+ </form>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <script src="script.js"></script>
 </body>
 </html>

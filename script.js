@@ -1,171 +1,442 @@
+// Astra Website - Interactive Features
+
+document.addEventListener('DOMContentLoaded', function() {
+ // Initialize theme
+ initTheme();
+ 
+ // Initialize authentication modal
+ initAuthModal();
+ 
+ // Initialize chart animation
+ initChart();
+ 
+ // Initialize smooth scrolling for anchor links
+ initSmoothScroll();
+ 
+ // Initialize toast notifications
+ initToast();
+ 
+ // Initialize form validation
+ initForms();
+ 
+ // Add animation classes on scroll
+ initScrollAnimations();
+});
+
 // Theme Toggle Functionality
-const themeToggle = document.getElementById('theme-toggle');
-const themeIcon = document.querySelector('.theme-icon');
-const body = document.body;
-
-// Check for saved theme preference or prefer-color-scheme
-const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-const savedTheme = localStorage.getItem('theme');
-
-// Set initial theme
-if (savedTheme === 'dark' || (!savedTheme && prefersDarkScheme.matches)) {
-    body.classList.add('dark-mode');
-    themeIcon.textContent = '☀️';
-} else {
-    body.classList.remove('dark-mode');
-    themeIcon.textContent = '🌙';
+function initTheme() {
+ const themeToggle = document.querySelector('.theme-btn');
+ const html = document.documentElement;
+ 
+ // Check for saved theme preference or default to light
+ const savedTheme = localStorage.getItem('theme') || 'light';
+ html.setAttribute('data-theme', savedTheme);
+ 
+ themeToggle.addEventListener('click', () => {
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  
+  html.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+  
+  // Show toast notification
+  showToast(`Switched to ${newTheme} mode`, 'success');
+ });
 }
 
-// Toggle theme function
-function toggleTheme() {
-    if (body.classList.contains('dark-mode')) {
-        body.classList.remove('dark-mode');
-        themeIcon.textContent = '🌙';
-        localStorage.setItem('theme', 'light');
-    } else {
-        body.classList.add('dark-mode');
-        themeIcon.textContent = '☀️';
-        localStorage.setItem('theme', 'dark');
-    }
+// Authentication Modal
+function initAuthModal() {
+ const authModal = document.getElementById('authModal');
+ const loginBtn = document.getElementById('loginBtn');
+ const modalClose = document.querySelector('.modal-close');
+ const authTabs = document.querySelectorAll('.auth-tab');
+ const loginForm = document.getElementById('loginForm');
+ const signupForm = document.getElementById('signupForm');
+ 
+ // Open modal
+ loginBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  authModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+ });
+ 
+ // Close modal
+ modalClose.addEventListener('click', () => {
+  authModal.classList.remove('active');
+  document.body.style.overflow = '';
+ });
+ 
+ // Close modal when clicking outside
+ authModal.addEventListener('click', (e) => {
+  if (e.target === authModal) {
+   authModal.classList.remove('active');
+   document.body.style.overflow = '';
+  }
+ });
+ 
+ // Switch between login and signup tabs
+ authTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+   const tabType = tab.getAttribute('data-tab');
+   
+   // Update active tab
+   authTabs.forEach(t => t.classList.remove('active'));
+   tab.classList.add('active');
+   
+   // Show corresponding form
+   if (tabType === 'login') {
+    loginForm.style.display = 'block';
+    signupForm.style.display = 'none';
+   } else {
+    loginForm.style.display = 'none';
+    signupForm.style.display = 'block';
+   }
+  });
+ });
+ 
+ // Handle form submissions
+ document.getElementById('loginSubmit').addEventListener('click', handleLogin);
+ document.getElementById('signupSubmit').addEventListener('click', handleSignup);
+ document.getElementById('googleLogin').addEventListener('click', handleGoogleLogin);
 }
 
-// Add event listener to theme toggle button
-themeToggle.addEventListener('click', toggleTheme);
-
-// Listen for system theme changes
-prefersDarkScheme.addEventListener('change', (e) => {
-    if (!localStorage.getItem('theme')) {
-        if (e.matches) {
-            body.classList.add('dark-mode');
-            themeIcon.textContent = '☀️';
-        } else {
-            body.classList.remove('dark-mode');
-            themeIcon.textContent = '🌙';
-        }
-    }
-});
-
-// Button click animations
-const buttons = document.querySelectorAll('button');
-buttons.forEach(button => {
-    button.addEventListener('mousedown', () => {
-        button.style.transform = 'scale(0.98)';
-    });
-    
-    button.addEventListener('mouseup', () => {
-        button.style.transform = '';
-    });
-    
-    button.addEventListener('mouseleave', () => {
-        button.style.transform = '';
-    });
-});
-
-// Nav button hover effects
-const navButtons = document.querySelectorAll('.nav-btn');
-navButtons.forEach(btn => {
-    btn.addEventListener('mouseenter', () => {
-        btn.style.transition = 'all 0.2s ease';
-    });
-});
-
-// CTA button interactions
-const ctaButtons = document.querySelectorAll('.cta-btn');
-ctaButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // Add ripple effect
-        const ripple = document.createElement('span');
-        const rect = btn.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-        
-        ripple.style.cssText = `
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.7);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            width: ${size}px;
-            height: ${size}px;
-            top: ${y}px;
-            left: ${x}px;
-            pointer-events: none;
-        `;
-        
-        btn.style.position = 'relative';
-        btn.style.overflow = 'hidden';
-        btn.appendChild(ripple);
-        
-        // Remove ripple after animation
-        setTimeout(() => {
-            ripple.remove();
-        }, 600);
-        
-        // Button action simulation
-        if (btn.classList.contains('primary')) {
-            console.log('Get Started clicked - would navigate to signup');
-            // In a real implementation, this would navigate to signup page
-        } else if (btn.classList.contains('secondary')) {
-            console.log('Learn More clicked - would show more info');
-            // In a real implementation, this would scroll to features or show modal
-        }
-    });
-});
-
-// Add CSS for ripple animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-// Feature card hover effects
-const featureCards = document.querySelectorAll('.feature-card');
-featureCards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-        card.style.transition = 'all 0.3s ease';
-    });
-});
-
-// Initialize with smooth transitions
-document.addEventListener('DOMContentLoaded', () => {
-    // Add smooth transitions after page load
-    setTimeout(() => {
-        document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-        document.querySelectorAll('*').forEach(el => {
-            el.style.transition = 'all 0.3s ease';
-        });
-    }, 100);
-});
-
-// Log in and Sign up button functionality
-document.querySelector('.login-btn').addEventListener('click', () => {
-    console.log('Login clicked - would show login modal/form');
-    // In a real implementation, this would show a login modal
-});
-
-document.querySelector('.signup-btn').addEventListener('click', () => {
-    console.log('Sign Up clicked - would navigate to signup page');
-    // In a real implementation, this would navigate to signup page
-});
-
-// Update theme icon based on current theme
-function updateThemeIcon() {
-    if (body.classList.contains('dark-mode')) {
-        themeIcon.textContent = '☀️';
-    } else {
-        themeIcon.textContent = '🌙';
-    }
+// Handle Login
+function handleLogin(e) {
+ e.preventDefault();
+ const email = document.getElementById('loginEmail').value;
+ const password = document.getElementById('loginPassword').value;
+ 
+ if (!email || !password) {
+  showToast('Please fill in all fields', 'error');
+  return;
+ }
+ 
+ // Show loading state
+ const btn = e.target;
+ const originalText = btn.textContent;
+ btn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div>';
+ btn.disabled = true;
+ 
+ // Simulate API call
+ setTimeout(() => {
+  btn.textContent = originalText;
+  btn.disabled = false;
+  
+  // Close modal
+  document.getElementById('authModal').classList.remove('active');
+  document.body.style.overflow = '';
+  
+  // Show success message
+  showToast('Successfully logged in!', 'success');
+  
+  // Update UI to show logged in state
+  updateAuthUI(true);
+ }, 1500);
 }
 
-// Listen for theme changes and update icon
-const observer = new MutationObserver(updateThemeIcon);
-observer.observe(body, { attributes: true, attributeFilter: ['class'] });
+// Handle Signup
+function handleSignup(e) {
+ e.preventDefault();
+ const name = document.getElementById('signupName').value;
+ const email = document.getElementById('signupEmail').value;
+ const password = document.getElementById('signupPassword').value;
+ const confirmPassword = document.getElementById('signupConfirmPassword').value;
+ 
+ if (!name || !email || !password || !confirmPassword) {
+  showToast('Please fill in all fields', 'error');
+  return;
+ }
+ 
+ if (password !== confirmPassword) {
+  showToast('Passwords do not match', 'error');
+  return;
+ }
+ 
+ if (password.length < 8) {
+  showToast('Password must be at least 8 characters', 'error');
+  return;
+ }
+ 
+ // Show loading state
+ const btn = e.target;
+ const originalText = btn.textContent;
+ btn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div>';
+ btn.disabled = true;
+ 
+ // Simulate API call
+ setTimeout(() => {
+  btn.textContent = originalText;
+  btn.disabled = false;
+  
+  // Close modal
+  document.getElementById('authModal').classList.remove('active');
+  document.body.style.overflow = '';
+  
+  // Show success message
+  showToast('Account created successfully!', 'success');
+  
+  // Update UI to show logged in state
+  updateAuthUI(true);
+ }, 1500);
+}
+
+// Handle Google Login
+function handleGoogleLogin() {
+ showToast('Redirecting to Google authentication...', 'success');
+ 
+ // Simulate redirect
+ setTimeout(() => {
+  document.getElementById('authModal').classList.remove('active');
+  document.body.style.overflow = '';
+  showToast('Successfully authenticated with Google!', 'success');
+  updateAuthUI(true);
+ }, 1000);
+}
+
+// Update UI after authentication
+function updateAuthUI(isLoggedIn) {
+ const loginBtn = document.getElementById('loginBtn');
+ 
+ if (isLoggedIn) {
+  loginBtn.innerHTML = '<i class="fas fa-user"></i> Dashboard';
+  loginBtn.href = '#';
+  loginBtn.onclick = () => {
+   showToast('Redirecting to dashboard...', 'success');
+   return false;
+  };
+ }
+}
+
+// Chart Animation
+function initChart() {
+ const chartBars = document.querySelectorAll('.chart-bar');
+ 
+ // Set initial heights (will be animated)
+ chartBars.forEach(bar => {
+  const value = bar.getAttribute('data-value');
+  const height = (parseInt(value) / 100) * 150; // 150px max height
+  bar.style.height = '0px';
+  bar.style.setProperty('--target-height', `${height}px`);
+  
+  // Animate after a delay
+  setTimeout(() => {
+   bar.style.height = `${height}px`;
+  }, 500);
+ });
+}
+
+// Smooth Scrolling
+function initSmoothScroll() {
+ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+   e.preventDefault();
+   
+   const targetId = this.getAttribute('href');
+   if (targetId === '#') return;
+   
+   const targetElement = document.querySelector(targetId);
+   if (targetElement) {
+    window.scrollTo({
+     top: targetElement.offsetTop - 80,
+     behavior: 'smooth'
+    });
+   }
+  });
+ });
+}
+
+// Toast Notifications
+function initToast() {
+ window.showToast = function(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const icon = type === 'success' ? '✓' : '✗';
+  
+  toast.innerHTML = `
+   <div class="toast-icon">${icon}</div>
+   <div class="toast-content">
+    <h4>${type === 'success' ? 'Success' : 'Error'}</h4>
+    <p>${message}</p>
+   </div>
+   <button class="toast-close">&times;</button>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Show toast
+  setTimeout(() => {
+   toast.classList.add('show');
+  }, 10);
+  
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+   toast.classList.remove('show');
+   setTimeout(() => {
+    if (toast.parentNode) {
+     toast.parentNode.removeChild(toast);
+    }
+   }, 300);
+  }, 5000);
+  
+  // Close button
+  toast.querySelector('.toast-close').addEventListener('click', () => {
+   toast.classList.remove('show');
+   setTimeout(() => {
+    if (toast.parentNode) {
+     toast.parentNode.removeChild(toast);
+    }
+   }, 300);
+  });
+ };
+}
+
+// Form Validation
+function initForms() {
+ // Newsletter form
+ const newsletterForm = document.querySelector('.newsletter-form');
+ if (newsletterForm) {
+  newsletterForm.addEventListener('submit', function(e) {
+   e.preventDefault();
+   const email = this.querySelector('input[type="email"]').value;
+   
+   if (!email || !isValidEmail(email)) {
+    showToast('Please enter a valid email address', 'error');
+    return;
+   }
+   
+   // Show loading
+   const btn = this.querySelector('button');
+   const originalText = btn.textContent;
+   btn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div>';
+   btn.disabled = true;
+   
+   // Simulate API call
+   setTimeout(() => {
+    btn.textContent = originalText;
+    btn.disabled = false;
+    this.reset();
+    showToast('Successfully subscribed to newsletter!', 'success');
+   }, 1000);
+  });
+ }
+}
+
+// Email validation helper
+function isValidEmail(email) {
+ const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+ return re.test(email);
+}
+
+// Scroll Animations
+function initScrollAnimations() {
+ const observerOptions = {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+ };
+ 
+ const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+   if (entry.isIntersecting) {
+    entry.target.classList.add('fade-in');
+   }
+  });
+ }, observerOptions);
+ 
+ // Observe elements to animate
+ document.querySelectorAll('.feature-card, .pricing-card, .step').forEach(el => {
+  observer.observe(el);
+ });
+}
+
+// Pricing Plan Selection
+function initPricingSelection() {
+ const pricingCards = document.querySelectorAll('.pricing-card');
+ 
+ pricingCards.forEach(card => {
+  card.addEventListener('click', function() {
+   // Remove selected class from all cards
+   pricingCards.forEach(c => c.classList.remove('selected'));
+   
+   // Add selected class to clicked card
+   this.classList.add('selected');
+   
+   // Update button text
+   const btn = this.querySelector('.btn');
+   const originalText = btn.textContent;
+   btn.textContent = 'Selected ✓';
+   btn.disabled = true;
+   
+   // Reset after 2 seconds
+   setTimeout(() => {
+    btn.textContent = originalText;
+    btn.disabled = false;
+   }, 2000);
+  });
+ });
+}
+
+// Initialize pricing selection
+initPricingSelection();
+
+// Mobile Menu Toggle (if needed in future)
+function initMobileMenu() {
+ const menuToggle = document.createElement('button');
+ menuToggle.className = 'mobile-menu-toggle';
+ menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+ menuToggle.style.display = 'none';
+ 
+ document.querySelector('.header-actions').prepend(menuToggle);
+ 
+ menuToggle.addEventListener('click', () => {
+  const nav = document.querySelector('.nav');
+  nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+ });
+ 
+ // Hide/show based on screen size
+ function updateMenuVisibility() {
+  if (window.innerWidth <= 768) {
+   menuToggle.style.display = 'block';
+   document.querySelector('.nav').style.display = 'none';
+  } else {
+   menuToggle.style.display = 'none';
+   document.querySelector('.nav').style.display = 'flex';
+  }
+ }
+ 
+ updateMenuVisibility();
+ window.addEventListener('resize', updateMenuVisibility);
+}
+
+// Initialize mobile menu
+initMobileMenu();
+
+// Performance monitoring
+window.addEventListener('load', () => {
+ // Log page load performance
+ if ('performance' in window) {
+  const perfData = window.performance.timing;
+  const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+  console.log(`Page loaded in ${loadTime}ms`);
+ }
+});
+
+// Error handling
+window.addEventListener('error', (e) => {
+ console.error('JavaScript error:', e.error);
+ showToast('An error occurred. Please try again.', 'error');
+});
+
+// Service Worker Registration (for PWA capabilities)
+if ('serviceWorker' in navigator) {
+ window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js').then(
+   registration => {
+    console.log('ServiceWorker registration successful');
+   },
+   err => {
+    console.log('ServiceWorker registration failed: ', err);
+   }
+  );
+ });
+}
