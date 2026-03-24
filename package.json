@@ -1,0 +1,19 @@
+{
+  "name": "astra-website",
+  "version": "1.0.0",
+  "description": "A website for Astra that avoids all modern web design tropes",
+  "main": "index.html",
+  "scripts": {
+    "start": "echo 'Open index.html in your browser'",
+    "test": "echo 'No tests needed for a website that avoids tropes'"
+  },
+  "keywords": [
+    "website",
+    "astra",
+    "anti-trope",
+    "simple",
+    "clean"
+  ],
+  "author": "Astra Team",
+  "license": "MIT"
+}
