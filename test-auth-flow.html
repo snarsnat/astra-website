@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Authentication Flow</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Authentication Flow Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Check Server Status</h2>
+        <button onclick="testServer()">Test Server</button>
+        <div id="server-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Test API Endpoints</h2>
+        <button onclick="testUserInfo()">Test /api/user/info</button>
+        <button onclick="testDashboardStats()">Test /api/dashboard/stats</button>
+        <button onclick="testProjectsList()">Test /api/projects/list</button>
+        <button onclick="testProjectCreate()">Test /api/projects/create</button>
+        <div id="api-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Test Authentication Flow</h2>
+        <button onclick="simulateLogin()">Simulate Login</button>
+        <button onclick="checkLocalStorage()">Check LocalStorage</button>
+        <button onclick="simulateLogout()">Simulate Logout</button>
+        <div id="auth-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Test Dashboard Access</h2>
+        <button onclick="testDashboardAccess()">Test Dashboard</button>
+        <div id="dashboard-results"></div>
+    </div>
+    
+    <script>
+        function testServer() {
+            fetch('/')
+                .then(response => {
+                    const status = document.getElementById('server-status');
+                    if (response.ok) {
+                        status.innerHTML = '<span class="success">✓ Server is running</span>';
+                    } else {
+                        status.innerHTML = '<span class="error">✗ Server error: ' + response.status + '</span>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('server-status').innerHTML = 
+                        '<span class="error">✗ Server error: ' + error + '</span>';
+                });
+        }
+        
+        function testUserInfo() {
+            const token = localStorage.getItem('astra-auth-token') || 'test_token';
+            fetch('/api/user/info', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('api-results').innerHTML = 
+                    '<h3>User Info Response:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                document.getElementById('api-results').innerHTML = 
+                    '<span class="error">Error: ' + error + '</span>';
+            });
+        }
+        
+        function testDashboardStats() {
+            const token = localStorage.getItem('astra-auth-token') || 'test_token';
+            fetch('/api/dashboard/stats', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('api-results').innerHTML = 
+                    '<h3>Dashboard Stats Response:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                document.getElementById('api-results').innerHTML = 
+                    '<span class="error">Error: ' + error + '</span>';
+            });
+        }
+        
+        function testProjectsList() {
+            const token = localStorage.getItem('astra-auth-token') || 'test_token';
+            fetch('/api/projects/list', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('api-results').innerHTML = 
+                    '<h3>Projects List Response:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                document.getElementById('api-results').innerHTML = 
+                    '<span class="error">Error: ' + error + '</span>';
+            });
+        }
+        
+        function testProjectCreate() {
+            const token = localStorage.getItem('astra-auth-token') || 'test_token';
+            fetch('/api/projects/create', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: 'Test Project ' + Date.now() })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('api-results').innerHTML = 
+                    '<h3>Project Create Response:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            })
+            .catch(error => {
+                document.getElementById('api-results').innerHTML = 
+                    '<span class="error">Error: ' + error + '</span>';
+            });
+        }
+        
+        function simulateLogin() {
+            // Simulate what the actual login would do
+            localStorage.setItem('astra-auth-token', 'test_token_' + Date.now());
+            localStorage.setItem('astra-user-data', JSON.stringify({
+                id: 'user_' + Date.now(),
+                email: 'test@example.com',
+                name: 'Test User'
+            }));
+            
+            document.getElementById('auth-results').innerHTML = 
+                '<span class="success">✓ Login simulated. Check LocalStorage.</span>';
+        }
+        
+        function checkLocalStorage() {
+            const token = localStorage.getItem('astra-auth-token');
+            const userData = localStorage.getItem('astra-user-data');
+            
+            let html = '<h3>LocalStorage Contents:</h3>';
+            html += '<p><strong>astra-auth-token:</strong> ' + (token ? token.substring(0, 20) + '...' : 'Not set') + '</p>';
+            
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    html += '<p><strong>astra-user-data:</strong> ' + JSON.stringify(user, null, 2) + '</p>';
+                } catch (e) {
+                    html += '<p><strong>astra-user-data:</strong> Invalid JSON</p>';
+                }
+            } else {
+                html += '<p><strong>astra-user-data:</strong> Not set</p>';
+            }
+            
+            document.getElementById('auth-results').innerHTML = html;
+        }
+        
+        function simulateLogout() {
+            localStorage.removeItem('astra-auth-token');
+            localStorage.removeItem('astra-user-data');
+            document.getElementById('auth-results').innerHTML = 
+                '<span class="success">✓ Logout simulated. LocalStorage cleared.</span>';
+        }
+        
+        function testDashboardAccess() {
+            const token = localStorage.getItem('astra-auth-token');
+            
+            if (!token) {
+                document.getElementById('dashboard-results').innerHTML = 
+                    '<span class="error">✗ No auth token. Please login first.</span>';
+                return;
+            }
+            
+            fetch('/dashboard.html')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('dashboard-results').innerHTML = 
+                            '<span class="success">✓ Dashboard page is accessible</span>';
+                    } else {
+                        document.getElementById('dashboard-results').innerHTML = 
+                            '<span class="error">✗ Dashboard error: ' + response.status + '</span>';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('dashboard-results').innerHTML = 
+                        '<span class="error">✗ Dashboard error: ' + error + '</span>';
+                });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            testServer();
+            checkLocalStorage();
+        });
+    </script>
+</body>
+</html>
