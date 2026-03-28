@@ -1,558 +1,404 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - ASTRA Security</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <style>
-        /* Dashboard specific styles */
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .dashboard-welcome h1 {
-            margin: 0;
-            color: var(--text-primary);
-        }
-        
-        .dashboard-welcome p {
-            margin: 5px 0 0;
-            color: var(--text-secondary);
-        }
-        
-        .dashboard-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stat-card.primary {
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .stat-card.success {
-            border-left: 4px solid #10b981;
-        }
-        
-        .stat-card.warning {
-            border-left: 4px solid #f59e0b;
-        }
-        
-        .stat-card.danger {
-            border-left: 4px solid #ef4444;
-        }
-        
-        .stat-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .stat-card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .stat-card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        
-        .stat-card.primary .stat-card-icon {
-            background: rgba(138, 43, 226, 0.1);
-            color: var(--primary-color);
-        }
-        
-        .stat-card.success .stat-card-icon {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-        
-        .stat-card.warning .stat-card-icon {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-        
-        .stat-card.danger .stat-card-icon {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
-        
-        .stat-card-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 5px 0;
-        }
-        
-        .stat-card-change {
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .stat-card-change.positive {
-            color: #10b981;
-        }
-        
-        .stat-card-change.negative {
-            color: #ef4444;
-        }
-        
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .dashboard-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid var(--border-color);
-        }
-        
-        .dashboard-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .dashboard-card-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0;
-        }
-        
-        .dashboard-card-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .btn-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-secondary);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .btn-icon:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-        }
-        
-        .activity-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-light);
-        }
-        
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-        
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 16px;
-        }
-        
-        .activity-icon.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-        
-        .activity-icon.warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-        
-        .activity-icon.info {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-        }
-        
-        .activity-content {
-            flex: 1;
-        }
-        
-        .activity-title {
-            font-weight: 500;
-            color: var(--text-primary);
-            margin: 0 0 5px;
-        }
-        
-        .activity-description {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin: 0;
-        }
-        
-        .activity-time {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            white-space: nowrap;
-        }
-        
-        .project-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .project-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-light);
-        }
-        
-        .project-item:last-child {
-            border-bottom: none;
-        }
-        
-        .project-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            background: rgba(138, 43, 226, 0.1);
-            color: var(--primary-color);
-            font-size: 16px;
-        }
-        
-        .project-info {
-            flex: 1;
-        }
-        
-        .project-name {
-            font-weight: 500;
-            color: var(--text-primary);
-            margin: 0 0 5px;
-        }
-        
-        .project-status {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-right: 8px;
-        }
-        
-        .project-status.connected {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-        
-        .project-status.pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-        
-        .project-status.disconnected {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
-        
-        .project-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-        
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: var(--border-color);
-        }
-        
-        .empty-state-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text-primary);
-        }
-        
-        .empty-state-description {
-            margin-bottom: 20px;
-        }
-    </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Update User Dashboard</title>
+ <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <script src="https://cdn.tailwindcss.com"></script>
+ <script>
+ tailwind.config = {
+ theme: {
+ fontFamily: {
+ sans: ['Space Grotesk', 'sans-serif'],
+ },
+ },
+ }
+ </script>
+ <style>
+ @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+ :root {
+ --font-size: 16px;
+ --background: #ffffff;
+ --foreground: oklch(0.145 0 0);
+ --primary: #030213;
+ --primary-foreground: oklch(1 0 0);
+ --border: rgba(0, 0, 0, 0.1);
+ --font-weight-medium: 500;
+ --font-weight-normal: 400;
+ }
+
+ * {
+ border-color: var(--border);
+ }
+
+ body {
+ background-color: var(--background);
+ color: var(--foreground);
+ }
+
+ html {
+ font-size: var(--font-size);
+ }
+
+ button {
+ font-size: var(--font-size);
+ font-weight: var(--font-weight-medium);
+ line-height: 1.5;
+ }
+ </style>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-left">
-                <a href="index.html" class="nav-logo">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>ASTRA</span>
-                </a>
-                <div class="nav-links">
-                    <a href="index.html">Home</a>
-                    <a href="index.html#features">Features</a>
-                    <a href="index.html#pricing">Pricing</a>
-                    <a href="index.html#docs">Documentation</a>
-                </div>
-            </div>
-            <div class="nav-right">
-                <button class="theme-btn" aria-label="Toggle theme">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <div class="user-menu">
-                    <button class="user-btn" id="user-btn">
-                        <i class="fas fa-user-circle"></i>
-                        <span id="username">User</span>
-                        <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="user-dropdown" id="user-dropdown">
-                        <a href="dashboard.html" class="dropdown-item">
-                            <i class="fas fa-tachometer-alt"></i>
-                            Dashboard
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-cog"></i>
-                            Settings
-                        </a>
-                        <a href="#" class="dropdown-item">
-                            <i class="fas fa-question-circle"></i>
-                            Help
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item" id="logout-btn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Logout
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+<body class="min-h-screen flex flex-col bg-white" style="font-family: 'Space Grotesk', sans-serif;">
+ <!-- Header -->
+ <header class="w-full px-8 py-6 flex justify-between items-center border-b-2 border-black">
+ <div class="flex items-center gap-3">
+ <!-- Real Astra Logo -->
+ <img src="Astra-logo.png" alt="Astra Logo" class="w-10 h-10">
+ <span class="text-xl font-semibold text-gray-900">Astra</span>
+ </div>
+ <div class="relative">
+ <button id="user-menu-btn" class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center hover:bg-purple-700 transition-colors cursor-pointer">
+ <span id="user-initial" class="text-white font-semibold text-lg">A</span>
+ </button>
+ 
+ <!-- User Dropdown Menu -->
+ <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white border-2 border-black rounded-lg shadow-lg hidden z-50">
+ <div class="py-2">
+ <a href="/profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">Profile</a>
+ <a href="/settings.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">Settings</a>
+ <div class="border-t border-gray-200 my-1"></div>
+ <button id="logout-btn" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">Logout</button>
+ </div>
+ </div>
+ </div>
+ </header>
 
-    <!-- Dashboard Content -->
-    <div class="dashboard-container">
-        <!-- Header -->
-        <div class="dashboard-header">
-            <div class="dashboard-welcome">
-                <h1>Welcome back, <span id="user-display-name">User</span>!</h1>
-                <p>Here's what's happening with your ASTRA security projects.</p>
-            </div>
-            <div class="dashboard-actions">
-                <button class="btn btn-primary" id="new-project-btn">
-                    <i class="fas fa-plus"></i>
-                    New Project
-                </button>
-            </div>
-        </div>
+ <!-- Main Content -->
+ <div class="flex-1 flex flex-col items-center justify-center px-8">
+ <div class="max-w-2xl text-center space-y-6 relative">
+ <!-- Top left corner -->
+ <div class="absolute top-0 left-0 w-16 h-16 border-l-4 border-t-4 border-black"></div>
 
-        <!-- Stats Cards -->
-        <div class="dashboard-stats">
-            <div class="stat-card primary">
-                <div class="stat-card-header">
-                    <div class="stat-card-title">Active Projects</div>
-                    <div class="stat-card-icon">
-                        <i class="fas fa-cube"></i>
-                    </div>
-                </div>
-                <div class="stat-card-value" id="active-projects">3</div>
-                <div class="stat-card-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +1 from last month
-                </div>
-            </div>
-            
-            <div class="stat-card success">
-                <div class="stat-card-header">
-                    <div class="stat-card-title">Verifications Today</div>
-                    <div class="stat-card-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                </div>
-                <div class="stat-card-value" id="verifications-today">1,247</div>
-                <div class="stat-card-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +12% from yesterday
-                </div>
-            </div>
-            
-            <div class="stat-card warning">
-                <div class="stat-card-header">
-                    <div class="stat-card-title">Blocked Threats</div>
-                    <div class="stat-card-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                </div>
-                <div class="stat-card-value" id="blocked-threats">42</div>
-                <div class="stat-card-change negative">
-                    <i class="fas fa-arrow-down"></i>
-                    -3 from last week
-                </div>
-            </div>
-            
-            <div class="stat-card danger">
-                <div class="stat-card-header">
-                    <div class="stat-card-title">API Usage</div>
-                    <div class="stat-card-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                </div>
-                <div class="stat-card-value" id="api-usage">78%</div>
-                <div class="stat-card-change positive">
-                    <i class="fas fa-arrow-up"></i>
-                    +5% from last month
-                </div>
-            </div>
-        </div>
+ <!-- Bottom right corner -->
+ <div class="absolute bottom-0 right-0 w-16 h-16 border-r-4 border-b-4 border-black"></div>
 
-        <!-- Main Content Grid -->
-        <div class="dashboard-grid">
-            <!-- Left Column: Recent Activity -->
-            <div class="dashboard-card">
-                <div class="dashboard-card-header">
-                    <h3 class="dashboard-card-title">Recent Activity</h3>
-                    <div class="dashboard-card-actions">
-                        <button class="btn-icon" title="Refresh">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                        <button class="btn-icon" title="Filter">
-                            <i class="fas fa-filter"></i>
-                        </button>
-                    </div>
-                </div>
-                <ul class="activity-list" id="activity-list">
-                    <!-- Activity items will be loaded here -->
-                    <li class="activity-item">
-                        <div class="activity-icon success">
-                            <i class="fas fa-check"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">Project "E-Commerce Site" connected</h4>
-                            <p class="activity-description">ASTRA security package successfully installed and configured</p>
-                        </div>
-                        <div class="activity-time">10 minutes ago</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">Suspicious activity detected</h4>
-                            <p class="activity-description">Multiple failed verification attempts from IP 192.168.1.100</p>
-                        </div>
-                        <div class="activity-time">1 hour ago</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon info">
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">Performance optimization completed</h4>
-                            <p class="activity-description">Challenge generation time reduced by 40%</p>
-                        </div>
-                        <div class="activity-time">3 hours ago</div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon success">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 class="activity-title">New team member added</h4>
-                            <p class="activity-description">John Doe granted access to project settings</p>
-                        </div>
-                        <div class="activity-time">Yesterday</div>
-                    </li>
-                </ul>
-            </div>
+ <!-- PlugZap Icon -->
+ <div class="flex justify-center mb-6">
+ <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-20 h-20 text-gray-400">
+ <!-- Plug body -->
+ <path d="M10 2v7.31"></path>
+ <path d="M14 9.3V2"></path>
+ <path d="M8.5 2h7"></path>
+ <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+ <!-- Lightning bolt -->
+ <path d="M12 12v4"></path>
+ <path d="m9 14 3-3 3 3"></path>
+ </svg>
+ </div>
 
-            <!-- Right Column: Projects -->
-            <div class="dashboard-card">
-                <div class="dashboard-card-header">
-                    <h3 class="dashboard-card-title">Your Projects</h3>
-                    <div class="dashboard-card-actions">
-                        <button class="btn-icon" title="Add Project" id="add-project-btn">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <ul class="project-list" id="project-list">
-                    <!-- Project items will be loaded here -->
-                    <li class="project-item">
-                        <div class="project-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <div class="project-info">
-                            <h4 class="project-name">E-Commerce Site</h4>
-                            <span class="project-status connected">Connected</span>
-                            <span class="project-time">Connected 10 min ago
+ <h1 class="text-5xl font-bold text-gray-900">
+ You have no connected apps!
+ </h1>
+
+ <p class="text-lg text-gray-600">
+ connect an app to start securing it with astra
+ </p>
+
+ <button id="connect-btn" class="mt-8 px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 mx-auto">
+ <span class="text-xl">+</span>
+ Connect
+ </button>
+ </div>
+ </div>
+
+ <!-- Connection Popup -->
+ <div id="connection-popup" class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-black transform translate-y-full transition-transform duration-300 ease-out z-50">
+ <div class="max-w-4xl mx-auto px-8 py-8">
+ <div class="flex justify-between items-center mb-6">
+ <h2 class="text-2xl font-bold text-gray-900">Connect Your App</h2>
+ <button id="close-popup" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+ </div>
+ 
+ <div class="space-y-6">
+ <!-- Step 1: Install -->
+ <div id="step-1" class="step">
+ <h3 class="text-lg font-semibold mb-3">Step 1: Install Astra CLI</h3>
+ <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+ <span class="text-green-400">$</span> npm install -g astra-security
+ </div>
+ <button id="install-btn" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+ Install Now
+ </button>
+ </div>
+
+ <!-- Step 2: Setup -->
+ <div id="step-2" class="step hidden">
+ <h3 class="text-lg font-semibold mb-3">Step 2: Setup Your Project</h3>
+ <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+ <span class="text-green-400">$</span> astra setup
+ </div>
+ <button id="setup-btn" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+ Run Setup
+ </button>
+ </div>
+
+ <!-- Step 3: Connect -->
+ <div id="step-3" class="step hidden">
+ <h3 class="text-lg font-semibold mb-3">Step 3: Connect Your Project</h3>
+ <p class="text-gray-600 mb-4">After running <code class="bg-gray-100 px-2 py-1 rounded">astra setup</code>, a URL will open to connect your project directory to Astra Security.</p>
+ <button id="connect-project-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
+ Connect Project
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Overlay -->
+ <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
+ <script>
+ // Demo token - in a real app, this would come from login
+ const DEMO_TOKEN = 'demo_token_123';
+ 
+ document.addEventListener('DOMContentLoaded', function() {
+ // User dropdown functionality
+ const userMenuBtn = document.getElementById('user-menu-btn');
+ const userDropdown = document.getElementById('user-dropdown');
+ 
+ userMenuBtn.addEventListener('click', function(e) {
+ e.stopPropagation();
+ userDropdown.classList.toggle('hidden');
+ });
+ 
+ // Close dropdown when clicking outside
+ document.addEventListener('click', function() {
+ userDropdown.classList.add('hidden');
+ });
+ 
+ // Fetch user data
+ fetch('/api/user/info', {
+ headers: {
+ 'Authorization': `Bearer ${DEMO_TOKEN}`
+ }
+ })
+ .then(response => {
+ if (!response.ok) {
+ throw new Error('Failed to fetch user data');
+ }
+ return response.json();
+ })
+ .then(userData => {
+ // Update user initial
+ const userInitial = document.getElementById('user-initial');
+ if (userData.email && userData.email.length > 0) {
+ userInitial.textContent = userData.email[0].toUpperCase();
+ }
+ 
+ // Update user menu with name
+ userMenuBtn.title = `Logged in as ${userData.name || userData.email}`;
+ })
+ .catch(error => {
+ console.error('Error fetching user data:', error);
+ });
+ const connectBtn = document.getElementById('connect-btn');
+ const popup = document.getElementById('connection-popup');
+ const overlay = document.getElementById('overlay');
+ const closeBtn = document.getElementById('close-popup');
+ const installBtn = document.getElementById('install-btn');
+ const setupBtn = document.getElementById('setup-btn');
+ const connectProjectBtn = document.getElementById('connect-project-btn');
+ const steps = document.querySelectorAll('.step');
+ 
+ let currentStep = 1;
+ 
+ // Open popup
+ connectBtn.addEventListener('click', function() {
+ popup.classList.remove('translate-y-full');
+ overlay.classList.remove('hidden');
+ document.body.style.overflow = 'hidden';
+ });
+ 
+ // Close popup
+ closeBtn.addEventListener('click', closePopup);
+ overlay.addEventListener('click', closePopup);
+ 
+ function closePopup() {
+ popup.classList.add('translate-y-full');
+ overlay.classList.add('hidden');
+ document.body.style.overflow = 'auto';
+ resetSteps();
+ }
+ 
+ function resetSteps() {
+ currentStep = 1;
+ steps.forEach(step => step.classList.add('hidden'));
+ document.getElementById('step-1').classList.remove('hidden');
+ }
+ 
+ function showStep(stepNumber) {
+ steps.forEach(step => step.classList.add('hidden'));
+ document.getElementById(`step-${stepNumber}`).classList.remove('hidden');
+ currentStep = stepNumber;
+ }
+ 
+ // Install button
+ installBtn.addEventListener('click', function() {
+ // Simulate installation
+ installBtn.textContent = 'Installing...';
+ installBtn.disabled = true;
+ 
+ setTimeout(() => {
+ installBtn.textContent = '✓ Installed';
+ installBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+ installBtn.classList.add('bg-gray-400', 'cursor-default');
+ 
+ // Show next step after delay
+ setTimeout(() => {
+ showStep(2);
+ }, 1000);
+ }, 2000);
+ });
+ 
+ // Setup button
+ setupBtn.addEventListener('click', function() {
+ // Simulate setup
+ setupBtn.textContent = 'Running setup...';
+ setupBtn.disabled = true;
+ 
+ setTimeout(() => {
+ setupBtn.textContent = '✓ Setup complete';
+ setupBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+ setupBtn.classList.add('bg-gray-400', 'cursor-default');
+ 
+ // Show next step after delay
+ setTimeout(() => {
+ showStep(3);
+ }, 1000);
+ }, 2000);
+ });
+ 
+ // Connect project button
+ connectProjectBtn.addEventListener('click', function() {
+ // Simulate project connection
+ connectProjectBtn.textContent = 'Connecting...';
+ connectProjectBtn.disabled = true;
+ 
+ setTimeout(() => {
+ // Update dashboard to show connected app
+ const mainContent = document.querySelector('.flex-1');
+ mainContent.innerHTML = `
+ <div class="w-full max-w-6xl mx-auto px-8 py-12">
+ <div class="flex justify-between items-center mb-8">
+ <h1 class="text-3xl font-bold text-gray-900">Connected Apps</h1>
+ <button id="add-more-btn" class="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2">
+ <span class="text-xl">+</span>
+ Add More
+ </button>
+ </div>
+ 
+ <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+ <!-- Connected App Card -->
+ <div class="border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow">
+ <div class="flex items-center justify-between mb-4">
+ <div class="flex items-center gap-3">
+ <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+ <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
+ <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+ <polyline points="14 2 14 8 20 8"></polyline>
+ <line x1="16" y1="13" x2="8" y2="13"></line>
+ <line x1="16" y1="17" x2="8" y2="17"></line>
+ <polyline points="10 9 9 9 8 9"></polyline>
+ </svg>
+ </div>
+ <div>
+ <h3 class="font-semibold text-lg">my-project</h3>
+ <p class="text-sm text-gray-500">/Users/username/projects/my-project</p>
+ </div>
+ </div>
+ <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Connected</span>
+ </div>
+ 
+ <div class="space-y-3">
+ <div class="flex justify-between">
+ <span class="text-gray-600">Security Score</span>
+ <span class="font-semibold">92/100</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-gray-600">Last Scan</span>
+ <span class="font-semibold">2 hours ago</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-gray-600">Vulnerabilities</span>
+ <span class="font-semibold text-green-600">0</span>
+ </div>
+ </div>
+ 
+ <div class="mt-6 pt-6 border-t border-gray-200">
+ <button class="w-full px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
+ View Details
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+ `;
+ 
+ // Add event listener to new "Add More" button
+ document.getElementById('add-more-btn').addEventListener('click', function() {
+ // Reset to empty state
+ const mainContent = document.querySelector('.flex-1');
+ mainContent.innerHTML = `
+ <div class="max-w-2xl text-center space-y-6 relative mx-auto mt-12">
+ <!-- Top left corner -->
+ <div class="absolute top-0 left-0 w-16 h-16 border-l-4 border-t-4 border-black"></div>
+
+ <!-- Bottom right corner -->
+ <div class="absolute bottom-0 right-0 w-16 h-16 border-r-4 border-b-4 border-black"></div>
+
+ <!-- PlugZap Icon -->
+ <div class="flex justify-center mb-6">
+ <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-20 h-20 text-gray-400">
+ <!-- Plug body -->
+ <path d="M10 2v7.31"></path>
+ <path d="M14 9.3V2"></path>
+ <path d="M8.5 2h7"></path>
+ <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+ <!-- Lightning bolt -->
+ <path d="M12 12v4"></path>
+ <path d="m9 14 3-3 3 3"></path>
+ </svg>
+ </div>
+
+ <h1 class="text-5xl font-bold text-gray-900">
+ You have no connected apps!
+ </h1>
+
+ <p class="text-lg text-gray-600">
+ connect an app to start securing it with astra
+ </p>
+
+ <button id="connect-btn" class="mt-8 px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 mx-auto">
+ <span class="text-xl">+</span>
+ Connect
+ </button>
+ </div>
+ `;
+ 
+ // Re-attach event listener to new connect button
+ document.getElementById('connect-btn').addEventListener('click', function() {
+ popup.classList.remove('translate-y-full');
+ overlay.classList.remove('hidden');
+ document.body.style.overflow = 'hidden';
+ });
+ 
+ // Close popup
+ closePopup();
+ }, 2000);
+ }, 2000);
+ });
+ });
+ </script>
+</body>
+</html>

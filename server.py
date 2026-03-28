@@ -22,10 +22,36 @@ def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     
+    # Create users table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            email TEXT UNIQUE,
+            name TEXT,
+            avatar_url TEXT,
+            banner_url TEXT,
+            created_at TIMESTAMP,
+            last_login TIMESTAMP
+        )
+    ''')
+    
+    # Create sessions table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS sessions (
+            id TEXT PRIMARY KEY,
+            user_id TEXT,
+            token TEXT UNIQUE,
+            created_at TIMESTAMP,
+            expires_at TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+    
     # Create projects table
     c.execute('''
         CREATE TABLE IF NOT EXISTS projects (
             id TEXT PRIMARY KEY,
+            user_id TEXT,
             auth_id TEXT UNIQUE,
             name TEXT,
             description TEXT,
@@ -33,7 +59,8 @@ def init_db():
             status TEXT,
             created_at TIMESTAMP,
             connected_at TIMESTAMP,
-            last_verified TIMESTAMP
+            last_verified TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
         )
     ''')
     
@@ -50,6 +77,19 @@ def init_db():
             FOREIGN KEY (project_id) REFERENCES projects (id)
         )
     ''')
+    
+    # Insert demo user if not exists
+    c.execute('''
+        INSERT OR IGNORE INTO users (id, email, name, created_at, last_login)
+        VALUES (?, ?, ?, ?, ?)
+    ''', ('user_001', 'user@example.com', 'Demo User', datetime.now().isoformat(), datetime.now().isoformat()))
+    
+    # Insert demo session
+    demo_token = 'demo_token_123'
+    c.execute('''
+        INSERT OR IGNORE INTO sessions (id, user_id, token, created_at, expires_at)
+        VALUES (?, ?, ?, ?, ?)
+    ''', ('session_001', 'user_001', demo_token, datetime.now().isoformat(), '2030-01-01T00:00:00Z'))
     
     conn.commit()
     conn.close()
@@ -72,6 +112,12 @@ class AstraRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_project_info(parsed_path)
         elif parsed_path.path == '/api/user/info':
             self.handle_user_info()
+        elif parsed_path.path == '/api/user/profile':
+            self.handle_user_profile()
+        elif parsed_path.path == '/api/user/settings':
+            self.handle_user_settings()
+        elif parsed_path.path == '/api/user/update':
+            self.handle_user_update()
         elif parsed_path.path == '/api/dashboard/stats':
             self.handle_dashboard_stats()
         elif parsed_path.path == '/api/projects/list':
@@ -357,15 +403,146 @@ class AstraRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json_response({'error': 'Unauthorized'}, 401)
             return
         
-        # For demo purposes, return mock user data
-        user_data = {
-            'id': 'user_001',
-            'email': 'user@example.com',
-            'name': 'Demo User',
-            'created_at': '2024-01-01T00:00:00Z'
-        }
+        token = auth_header[7:]  # Remove 'Bearer ' prefix
         
-        self.send_json_response(user_data)
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            c = conn.cursor()
+            
+            # Get user from session token
+            c.execute('''
+                SELECT u.id, u.email, u.name, u.avatar_url, u.banner_url, u.created_at
+                FROM users u
+                JOIN sessions s ON u.id = s.user_id
+                WHERE s.token = ? AND s.expires_at > ?
+            ''', (token, datetime.now().isoformat()))
+            
+            user_row = c.fetchone()
+            conn.close()
+            
+            if not user_row:
+                self.send_json_response({'error': 'Invalid or expired token'}, 401)
+                return
+            
+            user_data = {
+                'id': user_row[0],
+                'email': user_row[1],
+                'name': user_row[2],
+                'avatar_url': user_row[3],
+                'banner_url': user_row[4],
+                'created_at': user_row[5]
+            }
+            
+            self.send_json_response(user_data)
+            
+        except sqlite3.Error as e:
+            self.send_json_response({'error': f'Database error: {str(e)}'}, 500)
+    
+    def handle_user_profile(self):
+        """Handle user profile page request"""
+        # For now, just serve the profile.html file
+        try:
+            with open('profile.html', 'r') as f:
+                content = f.read()
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(content.encode())
+        except FileNotFoundError:
+            self.send_json_response({'error': 'Profile page not found'}, 404)
+    
+    def handle_user_settings(self):
+        """Handle user settings page request"""
+        # For now, just serve the settings.html file
+        try:
+            with open('settings.html', 'r') as f:
+                content = f.read()
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(content.encode())
+        except FileNotFoundError:
+            self.send_json_response({'error': 'Settings page not found'}, 404)
+    
+    def handle_user_update(self):
+        """Handle user profile update"""
+        if self.command != 'POST':
+            self.send_json_response({'error': 'Method not allowed'}, 405)
+            return
+        
+        auth_header = self.headers.get('Authorization', '')
+        
+        if not auth_header.startswith('Bearer '):
+            self.send_json_response({'error': 'Unauthorized'}, 401)
+            return
+        
+        token = auth_header[7:]  # Remove 'Bearer ' prefix
+        
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+            data = json.loads(post_data.decode())
+            
+            conn = sqlite3.connect(DB_PATH)
+            c = conn.cursor()
+            
+            # Get user ID from session token
+            c.execute('''
+                SELECT u.id FROM users u
+                JOIN sessions s ON u.id = s.user_id
+                WHERE s.token = ? AND s.expires_at > ?
+            ''', (token, datetime.now().isoformat()))
+            
+            user_row = c.fetchone()
+            
+            if not user_row:
+                conn.close()
+                self.send_json_response({'error': 'Invalid or expired token'}, 401)
+                return
+            
+            user_id = user_row[0]
+            
+            # Update user data
+            update_fields = []
+            update_values = []
+            
+            if 'name' in data:
+                update_fields.append('name = ?')
+                update_values.append(data['name'])
+            
+            if 'avatar_url' in data:
+                update_fields.append('avatar_url = ?')
+                update_values.append(data['avatar_url'])
+            
+            if 'banner_url' in data:
+                update_fields.append('banner_url = ?')
+                update_values.append(data['banner_url'])
+            
+            if update_fields:
+                update_values.append(user_id)
+                c.execute(f'''
+                    UPDATE users SET {', '.join(update_fields)}
+                    WHERE id = ?
+                ''', update_values)
+                
+                conn.commit()
+                conn.close()
+                
+                self.send_json_response({
+                    'status': 'success',
+                    'message': 'Profile updated successfully'
+                })
+            else:
+                conn.close()
+                self.send_json_response({
+                    'status': 'error',
+                    'message': 'No fields to update'
+                }, 400)
+                
+        except json.JSONDecodeError:
+            self.send_json_response({'error': 'Invalid JSON'}, 400)
+        except sqlite3.Error as e:
+            self.send_json_response({'error': f'Database error: {str(e)}'}, 500)
     
     def handle_dashboard_stats(self):
         """Handle dashboard stats request"""
