@@ -522,5 +522,14 @@ if __name__ == "__main__":
     # Change to the directory containing the website files
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     
+    # Get port from command line argument or use default
+    import sys
+    port = 8080
+    if len(sys.argv) > 1:
+        try:
+            port = int(sys.argv[1])
+        except ValueError:
+            print(f"Invalid port: {sys.argv[1]}, using default port 8080")
+    
     # Start server
-    start_server(8080)
+    start_server(port)
