@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Update User Dashboard</title>
+ <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <script src="https://cdn.tailwindcss.com"></script>
+ <script>
+ tailwind.config = {
+ theme: {
+ fontFamily: {
+ sans: ['Space Grotesk', 'sans-serif'],
+ },
+ },
+ }
+ </script>
+ <style>
+ @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+ :root {
+ --font-size: 16px;
+ --background: #ffffff;
+ --foreground: oklch(0.145 0 0);
+ --primary: #030213;
+ --primary-foreground: oklch(1 0 0);
+ --border: rgba(0, 0, 0, 0.1);
+ --font-weight-medium: 500;
+ --font-weight-normal: 400;
+ }
+
+ * {
+ border-color: var(--border);
+ }
+
+ body {
+ background-color: var(--background);
+ color: var(--foreground);
+ }
+
+ html {
+ font-size: var(--font-size);
+ }
+
+ button {
+ font-size: var(--font-size);
+ font-weight: var(--font-weight-medium);
+ line-height: 1.5;
+ }
+ </style>
+</head>
+<body class="min-h-screen flex flex-col bg-white" style="font-family: 'Space Grotesk', sans-serif;">
+ <!-- Header -->
+ <header class="w-full px-8 py-6 flex justify-between items-center border-b-2 border-black">
+ <div class="flex items-center gap-3">
+ <!-- Real Astra Logo -->
+ <img src="Astra-logo.png" alt="Astra Logo" class="w-10 h-10">
+ <span class="text-xl font-semibold text-gray-900">Astra</span>
+ </div>
+ <div class="relative">
+ <button id="user-menu-btn" class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center hover:bg-purple-700 transition-colors cursor-pointer">
+ <span id="user-initial" class="text-white font-semibold text-lg">A</span>
+ </button>
+ 
+ <!-- User Dropdown Menu -->
+ <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white border-2 border-black rounded-lg shadow-lg hidden z-50">
+ <div class="py-2">
+ <a href="/profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">Profile</a>
+ <a href="/settings.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">Settings</a>
+ <div class="border-t border-gray-200 my-1"></div>
+ <button id="logout-btn" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">Logout</button>
+ </div>
+ </div>
+ </div>
+ </header>
+
+ <!-- Main Content -->
+ <div class="flex-1 flex flex-col items-center justify-center px-8">
+ <div class="max-w-2xl text-center space-y-6 relative">
+ <!-- Top left corner -->
+ <div class="absolute top-0 left-0 w-16 h-16 border-l-4 border-t-4 border-black"></div>
+
+ <!-- Bottom right corner -->
+ <div class="absolute bottom-0 right-0 w-16 h-16 border-r-4 border-b-4 border-black"></div>
+
+ <!-- PlugZap Icon -->
+ <div class="flex justify-center mb-6">
+ <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-20 h-20 text-gray-400">
+ <!-- Plug body -->
+ <path d="M10 2v7.31"></path>
+ <path d="M14 9.3V2"></path>
+ <path d="M8.5 2h7"></path>
+ <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+ <!-- Lightning bolt -->
+ <path d="M12 12v4"></path>
+ <path d="m9 14 3-3 3 3"></path>
+ </svg>
+ </div>
+
+ <h1 class="text-5xl font-bold text-gray-900">
+ You have no connected apps!
+ </h1>
+
+ <p class="text-lg text-gray-600">
+ connect an app to start securing it with astra
+ </p>
+
+ <button id="connect-btn" class="mt-8 px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 mx-auto">
+ <span class="text-xl">+</span>
+ Connect
+ </button>
+ </div>
+ </div>
+
+ <!-- Connection Popup -->
+ <div id="connection-popup" class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-black transform translate-y-full transition-transform duration-300 ease-out z-50">
+ <div class="max-w-4xl mx-auto px-8 py-8">
+ <div class="flex justify-between items-center mb-6">
+ <h2 class="text-2xl font-bold text-gray-900">Connect Your App</h2>
+ <button id="close-popup" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+ </div>
+ 
+ <div class="space-y-6">
+ <!-- Step 1: Install -->
+ <div id="step-1" class="step">
+ <h3 class="text-lg font-semibold mb-3">Step 1: Install Astra CLI</h3>
+ <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+ <span class="text-green-400">$</span> npm install -g astra-security
+ </div>
+ <button id="install-btn" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+ Install Now
+ </button>
+ </div>
+
+ <!-- Step 2: Setup -->
+ <div id="step-2" class="step hidden">
+ <h3 class="text-lg font-semibold mb-3">Step 2: Setup Your Project</h3>
+ <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+ <span class="text-green-400">$</span> astra setup
+ </div>
+ <button id="setup-btn" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+ Run Setup
+ </button>
+ </div>
+
+ <!-- Step 3: Connect -->
+ <div id="step-3" class="step hidden">
+ <h3 class="text-lg font-semibold mb-3">Step 3: Connect Your Project</h3>
+ <p class="text-gray-600 mb-4">After running <code class="bg-gray-100 px-2 py-1 rounded">astra setup</code>, a URL will open to connect your project directory to Astra Security.</p>
+ <button id="connect-project-btn" class="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
+ Connect Project
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Overlay -->
+ <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40"></div>
+
+ <script>
+ // Demo token - in a real app, this would come from login
+ const DEMO_TOKEN = 'demo_token_123';
+ 
+ document.addEventListener('DOMContentLoaded', function() {
+ // User dropdown functionality
+ const userMenuBtn = document.getElementById('user-menu-btn');
+ const userDropdown = document.getElementById('user-dropdown');
+ 
+ userMenuBtn.addEventListener('click', function(e) {
+ e.stopPropagation();
+ userDropdown.classList.toggle('hidden');
+ });
+ 
+ // Close dropdown when clicking outside
+ document.addEventListener('click', function() {
+ userDropdown.classList.add('hidden');
+ });
+ 
+ // Fetch user data
+ fetch('/api/user/info', {
+ headers: {
+ 'Authorization': `Bearer ${DEMO_TOKEN}`
+ }
+ })
+ .then(response => {
+ if (!response.ok) {
+ throw new Error('Failed to fetch user data');
+ }
+ return response.json();
+ })
+ .then(userData => {
+ // Update user initial
+ const userInitial = document.getElementById('user-initial');
+ if (userData.email && userData.email.length > 0) {
+ userInitial.textContent = userData.email[0].toUpperCase();
+ }
+ 
+ // Update user menu with name
+ userMenuBtn.title = `Logged in as ${userData.name || userData.email}`;
+ })
+ .catch(error => {
+ console.error('Error fetching user data:', error);
+ });
+ const connectBtn = document.getElementById('connect-btn');
+ const popup = document.getElementById('connection-popup');
+ const overlay = document.getElementById('overlay');
+ const closeBtn = document.getElementById('close-popup');
+ const installBtn = document.getElementById('install-btn');
+ const setupBtn = document.getElementById('setup-btn');
+ const connectProjectBtn = document.getElementById('connect-project-btn');
+ const steps = document.querySelectorAll('.step');
+ 
+ let currentStep = 1;
+ 
+ // Open popup
+ connectBtn.addEventListener('click', function() {
+ popup.classList.remove('translate-y-full');
+ overlay.classList.remove('hidden');
+ document.body.style.overflow = 'hidden';
+ });
+ 
+ // Close popup
+ closeBtn.addEventListener('click', closePopup);
+ overlay.addEventListener('click', closePopup);
+ 
+ function closePopup() {
+ popup.classList.add('translate-y-full');
+ overlay.classList.add('hidden');
+ document.body.style.overflow = 'auto';
+ resetSteps();
+ }
+ 
+ function resetSteps() {
+ currentStep = 1;
+ steps.forEach(step => step.classList.add('hidden'));
+ document.getElementById('step-1').classList.remove('hidden');
+ }
+ 
+ function showStep(stepNumber) {
+ steps.forEach(step => step.classList.add('hidden'));
+ document.getElementById(`step-${stepNumber}`).classList.remove('hidden');
+ currentStep = stepNumber;
+ }
+ 
+ // Install button
+ installBtn.addEventListener('click', function() {
+ // Simulate installation
+ installBtn.textContent = 'Installing...';
+ installBtn.disabled = true;
+ 
+ setTimeout(() => {
+ installBtn.textContent = '✓ Installed';
+ installBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+ installBtn.classList.add('bg-gray-400', 'cursor-default');
+ 
+ // Show next step after delay
+ setTimeout(() => {
+ showStep(2);
+ }, 1000);
+ }, 2000);
+ });
+ 
+ // Setup button
+ setupBtn.addEventListener('click', function() {
+ // Simulate setup
+ setupBtn.textContent = 'Running setup...';
+ setupBtn.disabled = true;
+ 
+ setTimeout(() => {
+ setupBtn.textContent = '✓ Setup complete';
+ setupBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+ setupBtn.classList.add('bg-gray-400', 'cursor-default');
+ 
+ // Show next step after delay
+ setTimeout(() => {
+ showStep(3);
+ }, 1000);
+ }, 2000);
+ });
+ 
+ // Connect project button
+ connectProjectBtn.addEventListener('click', function() {
+ // Simulate project connection
+ connectProjectBtn.textContent = 'Connecting...';
+ connectProjectBtn.disabled = true;
+ 
+ setTimeout(() => {
+ // Update dashboard to show connected app
+ const mainContent = document.querySelector('.flex-1');
+ mainContent.innerHTML = `
+ <div class="w-full max-w-6xl mx-auto px-8 py-12">
+ <div class="flex justify-between items-center mb-8">
+ <h1 class="text-3xl font-bold text-gray-900">Connected Apps</h1>
+ <button id="add-more-btn" class="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2">
+ <span class="text-xl">+</span>
+ Add More
+ </button>
+ </div>
+ 
+ <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+ <!-- Connected App Card -->
+ <div class="border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow">
+ <div class="flex items-center justify-between mb-4">
+ <div class="flex items-center gap-3">
+ <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+ <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
+ <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+ <polyline points="14 2 14 8 20 8"></polyline>
+ <line x1="16" y1="13" x2="8" y2="13"></line>
+ <line x1="16" y1="17" x2="8" y2="17"></line>
+ <polyline points="10 9 9 9 8 9"></polyline>
+ </svg>
+ </div>
+ <div>
+ <h3 class="font-semibold text-lg">my-project</h3>
+ <p class="text-sm text-gray-500">/Users/username/projects/my-project</p>
+ </div>
+ </div>
+ <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Connected</span>
+ </div>
+ 
+ <div class="space-y-3">
+ <div class="flex justify-between">
+ <span class="text-gray-600">Security Score</span>
+ <span class="font-semibold">92/100</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-gray-600">Last Scan</span>
+ <span class="font-semibold">2 hours ago</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-gray-600">Vulnerabilities</span>
+ <span class="font-semibold text-green-600">0</span>
+ </div>
+ </div>
+ 
+ <div class="mt-6 pt-6 border-t border-gray-200">
+ <button class="w-full px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
+ View Details
+ </button>
+ </div>
+ </div>
+ </div>
+ </div>
+ `;
+ 
+ // Add event listener to new "Add More" button
+ document.getElementById('add-more-btn').addEventListener('click', function() {
+ // Reset to empty state
+ const mainContent = document.querySelector('.flex-1');
+ mainContent.innerHTML = `
+ <div class="max-w-2xl text-center space-y-6 relative mx-auto mt-12">
+ <!-- Top left corner -->
+ <div class="absolute top-0 left-0 w-16 h-16 border-l-4 border-t-4 border-black"></div>
+
+ <!-- Bottom right corner -->
+ <div class="absolute bottom-0 right-0 w-16 h-16 border-r-4 border-b-4 border-black"></div>
+
+ <!-- PlugZap Icon -->
+ <div class="flex justify-center mb-6">
+ <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-20 h-20 text-gray-400">
+ <!-- Plug body -->
+ <path d="M10 2v7.31"></path>
+ <path d="M14 9.3V2"></path>
+ <path d="M8.5 2h7"></path>
+ <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+ <!-- Lightning bolt -->
+ <path d="M12 12v4"></path>
+ <path d="m9 14 3-3 3 3"></path>
+ </svg>
+ </div>
+
+ <h1 class="text-5xl font-bold text-gray-900">
+ You have no connected apps!
+ </h1>
+
+ <p class="text-lg text-gray-600">
+ connect an app to start securing it with astra
+ </p>
+
+ <button id="connect-btn" class="mt-8 px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 mx-auto">
+ <span class="text-xl">+</span>
+ Connect
+ </button>
+ </div>
+ `;
+ 
+ // Re-attach event listener to new connect button
+ document.getElementById('connect-btn').addEventListener('click', function() {
+ popup.classList.remove('translate-y-full');
+ overlay.classList.remove('hidden');
+ document.body.style.overflow = 'hidden';
+ });
+ 
+ // Close popup
+ closePopup();
+ }, 2000);
+ }, 2000);
+ });
+ });
+ </script>
+</body>
+</html>
