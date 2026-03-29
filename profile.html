@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Profile - Astra</title>
+ <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <script src="https://cdn.tailwindcss.com"></script>
+ <script>
+ tailwind.config = {
+ theme: {
+ fontFamily: {
+ sans: ['Space Grotesk', 'sans-serif'],
+ },
+ },
+ }
+ </script>
+ <style>
+ @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+ :root {
+ --font-size: 16px;
+ --background: #ffffff;
+ --foreground: oklch(0.145 0 0);
+ --primary: #030213;
+ --primary-foreground: oklch(1 0 0);
+ --border: rgba(0, 0, 0, 0.1);
+ --font-weight-medium: 500;
+ --font-weight-normal: 400;
+ }
+
+ * {
+ border-color: var(--border);
+ }
+
+ body {
+ background-color: var(--background);
+ color: var(--foreground);
+ }
+
+ html {
+ font-size: var(--font-size);
+ }
+
+ button {
+ font-size: var(--font-size);
+ font-weight: var(--font-weight-medium);
+ line-height: 1.5;
+ }
+ </style>
+</head>
+<body class="min-h-screen flex flex-col bg-white" style="font-family: 'Space Grotesk', sans-serif;">
+ <!-- Header -->
+ <header class="w-full px-8 py-6 flex justify-between items-center border-b-2 border-black">
+ <div class="flex items-center gap-3">
+ <img src="Astra-logo.png" alt="Astra Logo" class="w-10 h-10">
+ <span class="text-xl font-semibold text-gray-900">Astra</span>
+ </div>
+ <div class="flex items-center gap-4">
+ <a href="/dashboard.html" class="text-gray-700 hover:text-gray-900 transition-colors">Dashboard</a>
+ <div class="relative">
+ <button id="user-menu-btn" class="w-10 h-10 rounded-full bg-purple-600 flex items-center justify-center hover:bg-purple-700 transition-colors cursor-pointer">
+ <span id="user-initial" class="text-white font-semibold text-lg">A</span>
+ </button>
+ </div>
+ </div>
+ </header>
+
+ <!-- Main Content -->
+ <div class="flex-1 max-w-4xl mx-auto w-full px-8 py-12">
+ <div class="mb-8">
+ <h1 class="text-3xl font-bold text-gray-900">Profile Settings</h1>
+ <p class="text-gray-600 mt-2">Update your personal information and profile appearance</p>
+ </div>
+
+ <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+ <!-- Left Column - Profile Picture & Banner -->
+ <div class="lg:col-span-2 space-y-8">
+ <!-- Banner -->
+ <div class="border-2 border-black rounded-xl p-6">
+ <h2 class="text-xl font-semibold mb-4">Banner</h2>
+ <div id="banner-preview" class="w-full h-48 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg mb-4 flex items-center justify-center">
+ <p class="text-white text-lg">Your banner will appear here</p>
+ </div>
+ <div class="flex gap-4">
+ <input type="text" id="banner-url" placeholder="Enter banner image URL" class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black">
+ <button id="update-banner-btn" class="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">Update Banner</button>
+ </div>
+ <p class="text-sm text-gray-500 mt-2">Enter a URL for your banner image (e.g., https://example.com/banner.jpg)</p>
+ </div>
+
+ <!-- Profile Picture -->
+ <div class="border-2 border-black rounded-xl p-6">
+ <h2 class="text-xl font-semibold mb-4">Profile Picture</h2>
+ <div class="flex items-center gap-6">
+ <div id="avatar-preview" class="w-24 h-24 rounded-full bg-purple-600 flex items-center justify-center text-white text-3xl font-bold">
+ A
+ </div>
+ <div class="flex-1">
+ <input type="text" id="avatar-url" placeholder="Enter avatar image URL" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black mb-2">
+ <button id="update-avatar-btn" class="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">Update Avatar</button>
+ <p class="text-sm text-gray-500 mt-2">Enter a URL for your profile picture</p>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <!-- Right Column - Basic Info -->
+ <div class="space-y-8">
+ <div class="border-2 border-black rounded-xl p-6">
+ <h2 class="text-xl font-semibold mb-4">Basic Information</h2>
+ 
+ <div class="space-y-4">
+ <div>
+ <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+ <input type="text" id="name" placeholder="Your name" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black">
+ </div>
+
+ <div>
+ <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+ <input type="email" id="email" placeholder="your@email.com" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-black bg-gray-50" readonly>
+ <p class="text-sm text-gray-500 mt-1">Email cannot be changed</p>
+ </div>
+
+ <div class="pt-4">
+ <button id="save-profile-btn" class="w-full px-4 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
+ Save Changes
+ </button>
+ </div>
+ </div>
+ </div>
+
+ <div class="border-2 border-green-200 bg-green-50 rounded-xl p-6">
+ <h3 class="text-lg font-semibold text-green-800 mb-2">💡 Tips</h3>
+ <ul class="space-y-2 text-green-700">
+ <li class="flex items-start gap-2">
+ <span class="text-green-500">✓</span>
+ <span>Use high-quality images for best results</span>
+ </li>
+ <li class="flex items-start gap-2">
+ <span class="text-green-500">✓</span>
+ <span>Recommended banner size: 1200×400px</span>
+ </li>
+ <li class="flex items-start gap-2">
+ <span class="text-green-500">✓</span>
+ <span>Profile picture works best as a square image</span>
+ </li>
+ </ul>
+ </div>
+ </div>
+ </div>
+ </div>
+
+ <script>
+ const DEMO_TOKEN = 'demo_token_123';
+ 
+ document.addEventListener('DOMContentLoaded', function() {
+ // Fetch user data
+ fetch('/api/user/info', {
+ headers: {
+ 'Authorization': `Bearer ${DEMO_TOKEN}`
+ }
+ })
+ .then(response => {
+ if (!response.ok) {
+ throw new Error('Failed to fetch user data');
+ }
+ return response.json();
+ })
+ .then(userData => {
+ // Update form fields
+ document.getElementById('name').value = userData.name || '';
+ document.getElementById('email').value = userData.email || '';
+ 
+ // Update avatar preview
+ const avatarPreview = document.getElementById('avatar-preview');
+ const userInitial = document.getElementById('user-initial');
+ 
+ if (userData.avatar_url) {
+ avatarPreview.style.backgroundImage = `url('${userData.avatar_url}')`;
+ avatarPreview.style.backgroundSize = 'cover';
+ avatarPreview.style.backgroundPosition = 'center';
+ avatarPreview.textContent = '';
+ } else if (userData.email && userData.email.length > 0) {
+ avatarPreview.textContent = userData.email[0].toUpperCase();
+ userInitial.textContent = userData.email[0].toUpperCase();
+ }
+ 
+ // Update banner preview
+ const bannerPreview = document.getElementById('banner-preview');
+ if (userData.banner_url) {
+ bannerPreview.style.backgroundImage = `url('${userData.banner_url}')`;
+ bannerPreview.style.backgroundSize = 'cover';
+ bannerPreview.style.backgroundPosition = 'center';
+ bannerPreview.textContent = '';
+ }
+ 
+ // Update avatar URL field
+ document.getElementById('avatar-url').value = userData.avatar_url || '';
+ document.getElementById('banner-url').value = userData.banner_url || '';
+ })
+ .catch(error => {
+ console.error('Error fetching user data:', error);
+ });
+ 
+ // Update banner
+ document.getElementById('update-banner-btn').addEventListener('click', function() {
+ const bannerUrl = document.getElementById('banner-url').value;
+ const bannerPreview = document.getElementById('banner-preview');
+ 
+ if (bannerUrl) {
+ bannerPreview.style.backgroundImage = `url('${bannerUrl}')`;
+ bannerPreview.style.backgroundSize = 'cover';
+ bannerPreview.style.backgroundPosition = 'center';
+ bannerPreview.textContent = '';
+ } else {
+ bannerPreview.style.backgroundImage = '';
+ bannerPreview.style.background = 'linear-gradient(to right, #8b5cf6, #3b82f6)';
+ bannerPreview.textContent = 'Your banner will appear here';
+ }
+ });
+ 
+ // Update avatar
+ document.getElementById('update-avatar-btn').addEventListener('click', function() {
+ const avatarUrl = document.getElementById('avatar-url').value;
+ const avatarPreview = document.getElementById('avatar-preview');
+ const userInitial = document.getElementById('user-initial');
+ 
+ if (avatarUrl) {
+ avatarPreview.style.backgroundImage = `url('${avatarUrl}')`;
+ avatarPreview.style.backgroundSize = 'cover';
+ avatarPreview.style.backgroundPosition = 'center';
+ avatarPreview.textContent = '';
+ } else {
+ avatarPreview.style.backgroundImage = '';
+ avatarPreview.style.backgroundColor = '#8b5cf6';
+ const email = document.getElementById('email').value;
+ if (email && email.length > 0) {
+ avatarPreview.textContent = email[0].toUpperCase();
+ userInitial.textContent = email[0].toUpperCase();
+ }
+ }
+ });
+ 
+ // Save profile
+ document.getElementById('save-profile-btn').addEventListener('click', function() {
+ const name = document.getElementById('name').value;
+ const avatarUrl = document.getElementById('avatar-url').value;
+ const bannerUrl = document.getElementById('banner-url').value;
+ 
+ const updateData = {};
+ if (name) updateData.name = name;
+ if (avatarUrl) updateData.avatar_url = avatarUrl;
+ if (bannerUrl) updateData.banner_url = bannerUrl;
+ 
+ if (Object.keys(updateData).length === 0) {
+ alert('No changes to save');
+ return;
+ }
+ 
+ const saveBtn = document.getElementById('save-profile-btn');
+ saveBtn.textContent = 'Saving...';
+ saveBtn.disabled = true;
+ 
+ fetch('/api/user/update', {
+ method: 'POST',
+ headers: {
+ 'Content-Type': 'application/json',
+ 'Authorization': `Bearer ${DEMO_TOKEN}`
+ },
+ body: JSON.stringify(updateData)
+ })
+ .then(response => {
+ if (!response.ok) {
+ throw new Error('Failed to update profile');
+ }
+ return response.json();
+ })
+ .then(data => {
+ alert('Profile updated successfully!');
+ saveBtn.textContent = 'Save Changes';
+ saveBtn.disabled = false;
+ })
+ .catch(error => {
+ console.error('Error updating profile:', error);
+ alert('Failed to update profile');
+ saveBtn.textContent = 'Save Changes';
+ saveBtn.disabled = false;
+ });
+ });
+ });
+ </script>
+</body>
+</html>

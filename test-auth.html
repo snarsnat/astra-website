@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Astra Auth Modal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .success {
+            color: #28a745;
+        }
+        .error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Astra Authentication Modal</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Check JavaScript Selectors</h2>
+        <button class="test-button" onclick="testSelectors()">Test Selectors</button>
+        <div id="selector-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Check Modal Existence</h2>
+        <button class="test-button" onclick="testModal()">Test Modal</button>
+        <div id="modal-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Check Event Listeners</h2>
+        <button class="test-button" onclick="testEventListeners()">Test Event Listeners</button>
+        <div id="event-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Simulate Button Click</h2>
+        <button class="test-button" onclick="simulateLoginClick()">Simulate Login Button Click</button>
+        <div id="simulate-result" class="result"></div>
+    </div>
+
+    <script>
+        function showResult(elementId, message, isSuccess) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<span class="${isSuccess ? 'success' : 'error'}">${message}</span>`;
+        }
+        
+        function testSelectors() {
+            try {
+                const loginBtn = document.getElementById('login-btn');
+                const signupBtn = document.getElementById('signup-btn');
+                const authModal = document.getElementById('auth-modal');
+                
+                if (!loginBtn) throw new Error('login-btn not found');
+                if (!signupBtn) throw new Error('signup-btn not found');
+                if (!authModal) throw new Error('auth-modal not found');
+                
+                showResult('selector-result', 
+                    `✅ All selectors found:<br>
+                    - login-btn: ${loginBtn ? 'Found' : 'Missing'}<br>
+                    - signup-btn: ${signupBtn ? 'Found' : 'Missing'}<br>
+                    - auth-modal: ${authModal ? 'Found' : 'Missing'}`, 
+                    true);
+            } catch (error) {
+                showResult('selector-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        function testModal() {
+            try {
+                const authModal = document.getElementById('auth-modal');
+                if (!authModal) throw new Error('auth-modal not found');
+                
+                const modalStyle = window.getComputedStyle(authModal);
+                const isHidden = modalStyle.display === 'none';
+                
+                showResult('modal-result', 
+                    `✅ Modal found<br>
+                    - Display: ${modalStyle.display}<br>
+                    - Visibility: ${modalStyle.visibility}<br>
+                    - Currently hidden: ${isHidden}`, 
+                    true);
+            } catch (error) {
+                showResult('modal-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        function testEventListeners() {
+            try {
+                const loginBtn = document.getElementById('login-btn');
+                const signupBtn = document.getElementById('signup-btn');
+                
+                if (!loginBtn) throw new Error('login-btn not found');
+                if (!signupBtn) throw new Error('signup-btn not found');
+                
+                // Check if elements have onclick handlers
+                const loginHasClick = loginBtn.onclick !== null || 
+                                     loginBtn.getAttribute('onclick') !== null;
+                const signupHasClick = signupBtn.onclick !== null || 
+                                      signupBtn.getAttribute('onclick') !== null;
+                
+                showResult('event-result', 
+                    `✅ Button event listeners:<br>
+                    - login-btn has click handler: ${loginHasClick}<br>
+                    - signup-btn has click handler: ${signupHasClick}<br>
+                    <small>Note: JavaScript event listeners added via addEventListener may not be detectable</small>`, 
+                    true);
+            } catch (error) {
+                showResult('event-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        function simulateLoginClick() {
+            try {
+                const loginBtn = document.getElementById('login-btn');
+                if (!loginBtn) throw new Error('login-btn not found');
+                
+                // Create and dispatch a click event
+                const clickEvent = new MouseEvent('click', {
+                    view: window,
+                    bubbles: true,
+                    cancelable: true
+                });
+                
+                loginBtn.dispatchEvent(clickEvent);
+                
+                // Check if modal is now visible
+                setTimeout(() => {
+                    const authModal = document.getElementById('auth-modal');
+                    const modalStyle = window.getComputedStyle(authModal);
+                    const isVisible = modalStyle.display !== 'none';
+                    
+                    showResult('simulate-result', 
+                        `✅ Click event dispatched<br>
+                        - Modal display after click: ${modalStyle.display}<br>
+                        - Modal is now visible: ${isVisible}`, 
+                        true);
+                }, 100);
+            } catch (error) {
+                showResult('simulate-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+        
+        // Run initial tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(testSelectors, 500);
+            setTimeout(testModal, 1000);
+        });
+    </script>
+</body>
+</html>

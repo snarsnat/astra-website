@@ -33,3 +33,14 @@ Thumbs.db
 tmp/
 temp/
 .vercel
+
+# Database files
+*.db
+*.db-journal
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Server logs
+*.log
