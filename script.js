@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', function() {
  
  // Add animation classes on scroll
  initScrollAnimations();
+ 
+ // Initialize test dashboard button
+ initTestButton();
 });
 
 // Theme Toggle Functionality
@@ -325,6 +328,434 @@ function handleLogout() {
    window.location.href = '/';
   }, 1000);
  }
+ }
+}
+
+// Initialize profile dropdown
+function initProfileDropdown() {
+ const profileBtn = document.getElementById('profileBtn');
+ const dropdownMenu = profileBtn.nextElementSibling;
+ const logoutBtn = document.getElementById('logoutBtn');
+ 
+ // Toggle dropdown
+ profileBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  dropdownMenu.classList.toggle('show');
+ });
+ 
+ // Close dropdown when clicking outside
+ document.addEventListener('click', () => {
+  dropdownMenu.classList.remove('show');
+ });
+ 
+ // Handle logout
+ logoutBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  updateAuthUI(false);
+  showToast('Successfully logged out', 'success');
+ });
+ 
+ // Handle navigation
+ document.querySelectorAll('.dropdown-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+   const href = item.getAttribute('href');
+   if (href === '#dashboard') {
+    e.preventDefault();
+    showDashboard();
+   } else if (href === '#profile') {
+    e.preventDefault();
+    showProfile();
+   } else if (href === '#settings') {
+    e.preventDefault();
+    showSettings();
+   }
+   dropdownMenu.classList.remove('show');
+  });
+ });
+}
+
+// Show dashboard view
+function showDashboard() {
+ const mainContent = document.querySelector('main');
+ mainContent.innerHTML = `
+  <section class="dashboard-section">
+   <div class="dashboard-header">
+    <h1>Dashboard</h1>
+    <p>Welcome back to your Astra dashboard</p>
+   </div>
+   
+   <div class="dashboard-content">
+    <div class="dashboard-card">
+     <div class="card-header">
+      <h3><i class="fas fa-project-diagram"></i> Connected Projects</h3>
+     </div>
+     <div class="card-body">
+      <div class="empty-state">
+       <div class="empty-icon">
+        <i class="fas fa-plug"></i>
+       </div>
+       <h4>You have no connected projects</h4>
+       <p>Connect one to start using Astra's security features</p>
+       <button class="btn btn-primary" id="connectProjectBtn">
+        <i class="fas fa-plus"></i> Connect Project
+       </button>
+      </div>
+     </div>
+    </div>
+    
+    <div class="dashboard-card">
+     <div class="card-header">
+      <h3><i class="fas fa-shield-alt"></i> Security Status</h3>
+     </div>
+     <div class="card-body">
+      <div class="security-status">
+       <div class="status-item">
+        <span class="status-label">Overall Protection</span>
+        <span class="status-value status-good">Active</span>
+       </div>
+       <div class="status-item">
+        <span class="status-label">Last Scan</span>
+        <span class="status-value">2 hours ago</span>
+       </div>
+       <div class="status-item">
+        <span class="status-label">Threats Blocked</span>
+        <span class="status-value">0</span>
+       </div>
+       <div class="status-item">
+        <span class="status-label">Vulnerabilities Found</span>
+        <span class="status-value">0</span>
+       </div>
+      </div>
+     </div>
+    </div>
+    
+    <div class="dashboard-card">
+     <div class="card-header">
+      <h3><i class="fas fa-chart-line"></i> Quick Actions</h3>
+     </div>
+     <div class="card-body">
+      <div class="quick-actions">
+       <button class="btn btn-outline btn-block" onclick="showToast('Documentation opened!', 'info')">
+        <i class="fas fa-book"></i> View Documentation
+       </button>
+       <button class="btn btn-outline btn-block" onclick="showSettings()">
+        <i class="fas fa-cog"></i> Open Settings
+       </button>
+       <button class="btn btn-outline btn-block" onclick="showProfile()">
+        <i class="fas fa-user"></i> Edit Profile
+       </button>
+       <button class="btn btn-outline btn-block" onclick="showToast('Support chat opened!', 'info')">
+        <i class="fas fa-headset"></i> Get Support
+       </button>
+      </div>
+     </div>
+    </div>
+   </div>
+   
+   <div class="dashboard-card" style="grid-column: 1 / -1;">
+    <div class="card-header">
+     <h3><i class="fas fa-bell"></i> Recent Activity</h3>
+    </div>
+    <div class="card-body">
+     <div class="empty-state" style="padding: 2rem;">
+      <div class="empty-icon" style="width: 60px; height: 60px;">
+       <i class="fas fa-history"></i>
+      </div>
+      <h4>No recent activity</h4>
+      <p>Activity will appear here once you connect a project</p>
+     </div>
+    </div>
+   </div>
+  </section>
+ `;
+ 
+ // Initialize connect project button
+ document.getElementById('connectProjectBtn').addEventListener('click', showConnectProjectPopup);
+}
+
+// Show landing page (default view)
+function showLandingPage() {
+ // Reload the page to show original content
+ window.location.reload();
+}
+
+// Show profile page
+function showProfile() {
+ const mainContent = document.querySelector('main');
+ mainContent.innerHTML = `
+  <section class="profile-section">
+   <div class="profile-header">
+    <h1>Profile Settings</h1>
+    <p>Manage your account information</p>
+   </div>
+   
+   <div class="profile-content">
+    <div class="profile-card">
+     <div class="card-header">
+      <h3><i class="fas fa-user-circle"></i> Profile Information</h3>
+     </div>
+     <div class="card-body">
+      <form id="profileForm">
+       <div class="form-group">
+        <label for="profileAvatar">Profile Picture</label>
+        <div class="avatar-upload">
+         <div class="avatar-preview">
+          <div class="avatar-image" id="avatarPreview">
+           <i class="fas fa-user"></i>
+          </div>
+         </div>
+         <input type="file" id="profileAvatar" accept="image/*" class="avatar-input">
+         <button type="button" class="btn btn-ghost btn-sm" id="changeAvatarBtn">
+          Change Picture
+         </button>
+        </div>
+       </div>
+       
+       <div class="form-group">
+        <label for="profileName">Full Name</label>
+        <input type="text" id="profileName" class="form-control" placeholder="Enter your full name" value="John Doe">
+       </div>
+       
+       <div class="form-group">
+        <label for="profileUsername">Username</label>
+        <input type="text" id="profileUsername" class="form-control" placeholder="Enter username" value="johndoe">
+       </div>
+       
+       <div class="form-group">
+        <label for="profileEmail">Email Address</label>
+        <input type="email" id="profileEmail" class="form-control" placeholder="Enter email" value="john@example.com" disabled>
+       </div>
+       
+       <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="showDashboard()">
+         Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+         Save Changes
+        </button>
+       </div>
+      </form>
+     </div>
+    </div>
+   </div>
+  </section>
+ `;
+ 
+ // Initialize profile form
+ initProfileForm();
+}
+
+// Initialize profile form
+function initProfileForm() {
+ const profileForm = document.getElementById('profileForm');
+ const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+ const avatarInput = document.getElementById('profileAvatar');
+ const saveProfileBtn = document.getElementById('saveProfileBtn');
+ 
+ // Handle avatar change
+ changeAvatarBtn.addEventListener('click', () => {
+  avatarInput.click();
+ });
+ 
+ avatarInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+   const reader = new FileReader();
+   reader.onload = (e) => {
+    const avatarPreview = document.getElementById('avatarPreview');
+    avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Profile Picture">`;
+   };
+   reader.readAsDataURL(file);
+  }
+ });
+ 
+ // Handle form submission
+ profileForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  // Show loading
+  saveProfileBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div>';
+  saveProfileBtn.disabled = true;
+  
+  // Simulate save
+  setTimeout(() => {
+   saveProfileBtn.textContent = 'Save Changes';
+   saveProfileBtn.disabled = false;
+   showToast('Profile updated successfully!', 'success');
+  }, 1000);
+ });
+}
+
+// Show settings page
+function showSettings() {
+ const mainContent = document.querySelector('main');
+ mainContent.innerHTML = `
+  <section class="settings-section">
+   <div class="settings-header">
+    <h1>Account Settings</h1>
+    <p>Configure your Astra preferences</p>
+   </div>
+   
+   <div class="settings-content">
+    <div class="settings-card">
+     <div class="card-header">
+      <h3><i class="fas fa-bell"></i> Notifications</h3>
+     </div>
+     <div class="card-body">
+      <div class="settings-item">
+       <div class="settings-info">
+        <h4>Email Notifications</h4>
+        <p>Receive email alerts for security events</p>
+       </div>
+       <label class="switch">
+        <input type="checkbox" checked>
+        <span class="slider"></span>
+       </label>
+      </div>
+      
+      <div class="settings-item">
+       <div class="settings-info">
+        <h4>Push Notifications</h4>
+        <p>Get browser notifications for important updates</p>
+       </div>
+       <label class="switch">
+        <input type="checkbox" checked>
+        <span class="slider"></span>
+       </label>
+      </div>
+     </div>
+    </div>
+    
+    <div class="settings-card">
+     <div class="card-header">
+      <h3><i class="fas fa-shield-alt"></i> Security</h3>
+     </div>
+     <div class="card-body">
+      <div class="settings-item">
+       <div class="settings-info">
+        <h4>Two-Factor Authentication</h4>
+        <p>Add an extra layer of security to your account</p>
+       </div>
+       <button class="btn btn-outline">Enable</button>
+      </div>
+      
+      <div class="settings-item">
+       <div class="settings-info">
+        <h4>Session Management</h4>
+        <p>View and manage active sessions</p>
+       </div>
+       <button class="btn btn-outline">Manage</button>
+      </div>
+     </div>
+    </div>
+   </div>
+  </section>
+ `;
+}
+
+// Show connect project popup
+function showConnectProjectPopup() {
+ const popup = document.createElement('div');
+ popup.className = 'connect-popup';
+ popup.innerHTML = `
+  <div class="popup-overlay"></div>
+  <div class="popup-content">
+   <div class="popup-header">
+    <h3><i class="fas fa-plug"></i> Project Connectivity Instructions</h3>
+    <button class="popup-close">&times;</button>
+   </div>
+   <div class="popup-body">
+    <div class="connect-tabs">
+     <button class="connect-tab active" data-tab="npm">npm</button>
+     <button class="connect-tab" data-tab="html">HTML</button>
+     <button class="connect-tab" data-tab="tsx">TSX</button>
+     <button class="connect-tab" data-tab="js">JavaScript</button>
+    </div>
+    
+    <div class="connect-content">
+     <div class="connect-pane active" id="npmPane">
+      <div class="code-block">
+       <div class="code-header">
+        <span>Terminal</span>
+        <button class="copy-btn" data-clipboard-target="#npmCode">
+         <i class="fas fa-copy"></i> Copy
+        </button>
+       </div>
+       <pre><code id="npmCode">npm install astra-security</code></pre>
+      </div>
+      <p class="connect-description">
+       Install Astra Security package via npm. This will add Astra to your project dependencies.
+      </p>
+     </div>
+     
+     <div class="connect-pane" id="htmlPane">
+      <div class="code-block">
+       <div class="code-header">
+        <span>HTML</span>
+        <button class="copy-btn" data-clipboard-target="#htmlCode">
+         <i class="fas fa-copy"></i> Copy
+        </button>
+       </div>
+       <pre><code id="htmlCode">&lt;script src="https://cdn.astra.security/latest/astra.min.js"&gt;&lt;/script&gt;</code></pre>
+      </div>
+      <p class="connect-description">
+       Add this script tag to your HTML file to include Astra via CDN.
+      </p>
+     </div>
+     
+     <div class="connect-pane" id="tsxPane">
+      <div class="code-block">
+       <div class="code-header">
+        <span>TypeScript/React</span>
+        <button class="copy-btn" data-clipboard-target="#tsxCode">
+         <i class="fas fa-copy"></i> Copy
+        </button>
+       </div>
+       <pre><code id="tsxCode">import { Astra } from 'astra-security';
+
+const astra = new Astra({
+  apiKey: 'your-api-key-here',
+  environment: 'production'
+});</code></pre>
+      </div>
+      <p class="connect-description">
+       Import and initialize Astra in your TypeScript or React application.
+      </p>
+     </div>
+     
+     <div class="connect-pane" id="jsPane">
+      <div class="code-block">
+       <div class="code-header">
+        <span>JavaScript</span>
+        <button class="copy-btn" data-clipboard-target="#jsCode">
+         <i class="fas fa-copy"></i> Copy
+        </button>
+       </div>
+       <pre><code id="jsCode">const astra = new Astra({
+  apiKey: 'your-api-key-here',
+  environment: 'production'
+});</code></pre>
+      </div>
+      <p class="connect-description">
+       Initialize Astra in your JavaScript application after including the script.
+      </p>
+     </div>
+    </div>
+    
+    <div class="popup-footer">
+     <button class="btn btn-secondary" id="closePopupBtn">Close</button>
+     <button class="btn btn-primary" id="connectBtn">
+      <i class="fas fa-check"></i> Connect Project
+     </button>
+    </div>
+   </div>
+  </div>
+ `;
+ 
+ document.body.appendChild(popup);
+ 
+ // Initialize popup
+ initConnectPopup();
 }
 
 // Chart Animation
@@ -559,4 +990,128 @@ if ('serviceWorker' in navigator) {
    }
   );
  });
+}
+
+// Initialize connect project popup
+function initConnectPopup() {
+ const popup = document.querySelector('.connect-popup');
+ const closeBtn = popup.querySelector('.popup-close');
+ const closePopupBtn = popup.querySelector('#closePopupBtn');
+ const connectBtn = popup.querySelector('#connectBtn');
+ const tabs = popup.querySelectorAll('.connect-tab');
+ const panes = popup.querySelectorAll('.connect-pane');
+ const copyButtons = popup.querySelectorAll('.copy-btn');
+ 
+ // Close popup
+ function closePopup() {
+  popup.remove();
+ }
+ 
+ // Tab switching
+ tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+   const tabId = tab.getAttribute('data-tab');
+   
+   // Update active tab
+   tabs.forEach(t => t.classList.remove('active'));
+   tab.classList.add('active');
+   
+   // Show corresponding pane
+   panes.forEach(pane => {
+    pane.classList.remove('active');
+    if (pane.id === `${tabId}Pane`) {
+     pane.classList.add('active');
+    }
+   });
+  });
+ });
+ 
+ // Copy to clipboard
+ copyButtons.forEach(button => {
+  button.addEventListener('click', () => {
+   const targetId = button.getAttribute('data-clipboard-target');
+   const codeElement = popup.querySelector(targetId);
+   const codeText = codeElement.textContent;
+   
+   navigator.clipboard.writeText(codeText).then(() => {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    button.classList.add('copied');
+    
+    setTimeout(() => {
+     button.innerHTML = originalText;
+     button.classList.remove('copied');
+    }, 2000);
+   });
+  });
+ });
+ 
+ // Event listeners
+ closeBtn.addEventListener('click', closePopup);
+ closePopupBtn.addEventListener('click', closePopup);
+ 
+ // Close when clicking overlay
+ popup.querySelector('.popup-overlay').addEventListener('click', closePopup);
+ 
+ // Connect project
+ connectBtn.addEventListener('click', () => {
+  connectBtn.innerHTML = '<div class="spinner" style="width: 20px; height: 20px;"></div>';
+  connectBtn.disabled = true;
+  
+  // Simulate connection
+  setTimeout(() => {
+   closePopup();
+   showToast('Project connected successfully!', 'success');
+   
+   // Update dashboard to show connected project
+   const emptyState = document.querySelector('.empty-state');
+   if (emptyState) {
+    emptyState.innerHTML = `
+     <div class="connected-projects">
+      <h4>Connected Projects</h4>
+      <div class="project-list">
+       <div class="project-item">
+        <div class="project-icon">
+         <i class="fas fa-folder"></i>
+        </div>
+        <div class="project-info">
+         <h5>My First Project</h5>
+         <p>Connected just now</p>
+        </div>
+        <div class="project-status">
+         <span class="status-badge status-active">Active</span>
+        </div>
+       </div>
+      </div>
+      <button class="btn btn-primary" id="connectProjectBtn">
+       <i class="fas fa-plus"></i> Connect Another Project
+      </button>
+     </div>
+    `;
+    
+    // Reinitialize connect button
+    document.getElementById('connectProjectBtn').addEventListener('click', showConnectProjectPopup);
+   }
+  }, 1500);
+ });
+ 
+ // Close with Escape key
+ document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+   closePopup();
+  }
+ });
+}
+
+// Initialize test dashboard button
+function initTestButton() {
+ const testBtn = document.getElementById('testDashboardBtn');
+ if (testBtn) {
+  testBtn.addEventListener('click', () => {
+   // Simulate login
+   localStorage.setItem('astra_auth', 'true');
+   updateAuthUI(true);
+   showToast('Test login successful! Showing dashboard.', 'success');
+  });
+ }
 }
