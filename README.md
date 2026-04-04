@@ -1,117 +1,51 @@
-# Astra Website
+# ASTRA Website
 
-A modern, professional website for Astra - an AI-powered financial analytics platform. Built with a Vercel-inspired design system featuring dark mode, interactive charts, and authentication flows.
+A dashboard for managing GitHub repositories with read/write permissions.
 
 ## Features
 
-### 🎨 Design System
-- **Dark/Light Mode Toggle** - Persistent theme preference with smooth transitions
-- **Vercel-inspired UI** - Clean, modern design with professional spacing and typography
-- **Responsive Layout** - Fully responsive across all device sizes
-- **Custom Animations** - Smooth scroll animations and interactive elements
+- **GitHub Integration**: Connect your GitHub account with read/write repository permissions
+- **Repository Management**: View and manage your GitHub repositories
+- **Secure Authentication**: OAuth-based authentication with GitHub
+- **Dashboard**: Clean, modern interface for repository management
 
-### 📊 Interactive Components
-- **Financial Performance Chart** - Animated bar chart showing growth metrics
-- **Authentication Modal** - Login/Signup forms with validation
-- **Pricing Cards** - Interactive pricing plans with selection states
-- **Toast Notifications** - Success/error notifications with auto-dismiss
-- **Smooth Scrolling** - Animated navigation between sections
+## Deployment
 
-### 🛠️ Technical Features
-- **Vanilla JavaScript** - No frameworks, minimal dependencies
-- **CSS Custom Properties** - Theme variables for easy customization
-- **Local Storage** - Persistent theme and user preferences
-- **Form Validation** - Client-side validation with user feedback
-- **Performance Optimized** - Efficient animations and lazy loading
+This project is deployed on Vercel:
+- **Production**: https://astra-website-vercel-test.vercel.app
+- **Dashboard**: https://astra-website-vercel-test.vercel.app/dashboard.html
 
-## Project Structure
+## Setup
 
-```
-astra-website/
-├── index.html          # Main HTML file
-├── style.css          # All styles (theme, layout, components)
-├── script.js          # All JavaScript functionality
-├── README.md          # This documentation
-└── assets/            # Images and icons (to be added)
-```
+1. **Environment Variables** (set in Vercel dashboard):
+   - `GITHUB_CLIENT_ID`: GitHub OAuth App Client ID
+   - `GITHUB_CLIENT_SECRET`: GitHub OAuth App Client Secret
+   - `GITHUB_CALLBACK_URL`: https://astra-website-vercel-test.vercel.app/api/auth/github/callback
 
-## Setup Instructions
+2. **GitHub OAuth App Setup**:
+   - Go to GitHub → Settings → Developer settings → OAuth Apps
+   - Create new OAuth App
+   - Homepage URL: https://astra-website-vercel-test.vercel.app
+   - Authorization callback URL: https://astra-website-vercel-test.vercel.app/api/auth/github/callback
 
-1. **Clone or download** the project files
-2. **Open `index.html`** in a modern web browser
-3. **No build process required** - works directly in the browser
+## Development
 
-## Browser Support
+The project uses:
+- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: Python serverless functions (Vercel Functions)
+- **Deployment**: Vercel with automatic GitHub integration
 
-- Chrome 60+
-- Firefox 55+
-- Safari 12+
-- Edge 79+
+## Automatic Deployments
 
-## Key Functionality
+This repository is connected to Vercel for automatic deployments:
+- Pushes to `master` branch trigger production deployments
+- All deployments are automatically built and deployed
 
-### Theme Toggle
-- Click the sun/moon icon in the header
-- Theme preference saved in localStorage
-- Smooth transitions between themes
+## API Endpoints
 
-### Authentication
-- Click "Get Started" or "Login" buttons
-- Switch between Login and Signup tabs
-- Form validation with real-time feedback
-- Google OAuth simulation
-
-### Interactive Elements
-- **Chart Animation**: Bars grow on page load
-- **Pricing Cards**: Click to select plans
-- **Smooth Scrolling**: Click navigation links
-- **Toast Notifications**: Success/error messages
-
-## Customization
-
-### Colors
-Edit the CSS custom properties in `style.css`:
-```css
-:root {
-  --purple-500: #8b5cf6;  /* Primary brand color */
-  --green-500: #22c55e;   /* Success color */
-  /* ... other variables */
-}
-```
-
-### Content
-- Update text content in `index.html`
-- Modify chart data in `script.js` (initChart function)
-- Adjust pricing plans in the pricing section
-
-### Features
-- Add new sections by following existing patterns
-- Extend JavaScript functionality in `script.js`
-- Add new CSS components in `style.css`
-
-## Performance Notes
-
-- **CSS**: All styles in one file for minimal HTTP requests
-- **JavaScript**: Event delegation and efficient DOM manipulation
-- **Images**: Placeholder images used - replace with optimized assets
-- **Animations**: Uses CSS transitions for smooth performance
-
-## Future Enhancements
-
-1. **Backend Integration** - Connect to real authentication API
-2. **Real Data Charts** - Integrate with financial data APIs
-3. **Multi-language Support** - Add internationalization
-4. **PWA Features** - Installable web app with offline support
-5. **Analytics Integration** - Add user tracking and analytics
+- `GET /api/auth/github` - Start GitHub OAuth flow
+- `GET /api/auth/github/callback` - GitHub OAuth callback
 
 ## License
 
-This project is available for use and modification. Please credit the original design if used publicly.
-
-## Contact
-
-For questions or support, please refer to the documentation or contact the development team.
-
----
-
-**Note**: This is a frontend demonstration. Backend functionality is simulated with timeouts for demonstration purposes.
+MIT
