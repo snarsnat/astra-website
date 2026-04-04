@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub OAuth Setup - ASTRA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .step-card {
+            transition: all 0.3s ease;
+        }
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .copy-btn.copied {
+            background-color: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                <i class="fab fa-github mr-3"></i>
+                GitHub OAuth Setup for ASTRA
+            </h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                Follow these steps to connect your GitHub account to ASTRA for repository scanning and security analysis.
+            </p>
+        </div>
+
+        <!-- Steps -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <!-- Step 1 -->
+            <div class="step-card bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-blue-600 font-bold text-lg">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold">Register OAuth App</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Create a new OAuth application in your GitHub Developer Settings.
+                </p>
+                <a href="https://github.com/settings/developers" target="_blank" 
+                   class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                    Go to GitHub Developer Settings
+                    <i class="fas fa-external-link-alt ml-2"></i>
+                </a>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-green-600 font-bold text-lg">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold">Configure App Details</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Fill in the application details with the information below.
+                </p>
+                <button onclick="showAppDetails()" 
+                        class="inline-flex items-center text-green-600 hover:text-green-800 font-medium">
+                    View Required Details
+                    <i class="fas fa-chevron-down ml-2"></i>
+                </button>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                        <span class="text-purple-600 font-bold text-lg">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold">Get Credentials</h3>
+                </div>
+                <p class="text-gray-600 mb-4">
+                    Copy your Client ID and Client Secret to configure ASTRA.
+                </p>
+                <button onclick="showCredentials()" 
+                        class="inline-flex items-center text-purple-600 hover:text-purple-800 font-medium">
+                    Configure ASTRA
+                    <i class="fas fa-cog ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- App Details Section -->
+        <div id="appDetails" class="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">
+                <i class="fas fa-cogs mr-3"></i>
+                Application Details for GitHub OAuth
+            </h2>
+            
+            <div class="space-y-6">
+                <!-- Application Name -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Application Name
+                    </label>
+                    <div class="flex items-center">
+                        <input type="text" readonly value="ASTRA Security Scanner" 
+                               class="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg font-mono">
+                        <button onclick="copyText('ASTRA Security Scanner', this)" 
+                                class="copy-btn ml-3 px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Homepage URL -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Homepage URL
+                    </label>
+                    <div class="flex items-center">
+                        <input type="text" readonly value="https://astra-website-vercel-test.vercel.app" 
+                               class="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg font-mono">
+                        <button onclick="copyText('https://astra-website-vercel-test.vercel.app', this)" 
+                                class="copy-btn ml-3 px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Application Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Application Description
+                    </label>
+                    <div class="flex items-center">
+                        <input type="text" readonly value="Security vulnerability scanner for GitHub repositories" 
+                               class="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg font-mono">
+                        <button onclick="copyText('Security vulnerability scanner for GitHub repositories', this)" 
+                                class="copy-btn ml-3 px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Authorization Callback URL -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Authorization Callback URL
+                    </label>
+                    <div class="space-y-3">
+                        <!-- Production URL -->
+                        <div class="flex items-center">
+                            <input type="text" readonly value="https://astra-website-vercel-test.vercel.app/github-callback" 
+                                   class="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg font-mono">
+                            <button onclick="copyText('https://astra-website-vercel-test.vercel.app/github-callback', this)" 
+                                    class="copy-btn ml-3 px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Local Development URL -->
+                        <div class="flex items-center">
+                            <input type="text" readonly value="http://localhost:3000/github-callback" 
+                                   class="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg font-mono">
+                            <button onclick="copyText('http://localhost:3000/github-callback', this)" 
+                                    class="copy-btn ml-3 px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                        
+                        <p class="text-sm text-gray-500 mt-2">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Use the production URL for your live app, or the local URL for development.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credentials Section -->
+        <div id="credentials" class="hidden bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">
+                <i class="fas fa-key mr-3"></i>
+                Configure ASTRA with Your Credentials
+            </h2>
+            
+            <div class="space-y-6">
+                <!-- Environment Variables -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-700">
+                        Environment Variables for Production (Vercel)
+                    </h3>
+                    <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                        <div class="mb-2">
+                            <span class="text-green-400">GITHUB_CLIENT_ID</span>=<span class="text-yellow-300">your_client_id_here</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-green-400">GITHUB_CLIENT_SECRET</span>=<span class="text-yellow-300">your_client_secret_here</span>
+                        </div>
+                        <div>
+                            <span class="text-green-400">GITHUB_CALLBACK_URL</span>=<span class="text-yellow-300">https://astra-website-vercel-test.vercel.app/github-callback</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Server Configuration -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-gray-700">
+                        Update server.py Configuration
+                    </h3>
+                    <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                        <div class="mb-2">
+                            <span class="text-gray-500"># GitHub OAuth Configuration</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-blue-400">GITHUB_CLIENT_ID</span> = <span class="text-yellow-300">os.environ.get(</span><span class="text-green-400">'GITHUB_CLIENT_ID'</span>, <span class="text-green-400">'your_client_id_here'</span><span class="text-yellow-300">)</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-blue-400">GITHUB_CLIENT_SECRET</span> = <span class="text-yellow-300">os.environ.get(</span><span class="text-green-400">'GITHUB_CLIENT_SECRET'</span>, <span class="text-green-400">'your_client_secret_here'</span><span class="text-yellow-300">)</span>
+                        </div>
+                        <div>
+                            <span class="text-blue-400">GITHUB_CALLBACK_URL</span> = <span class="text-yellow-300">os.environ.get(</span><span class="text-green-400">'GITHUB_CALLBACK_URL'</span>, <span class="text-green-400">'http://localhost:3000/github-callback'</span><span class="text-yellow-300">)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permissions Info -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h4 class="font-semibold text-blue-800 mb-2">
+                        <i class="fas fa-shield-alt mr-2"></i>
+                        Required Permissions
+                    </h4>
+                    <ul class="text-blue-700 space-y-1">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle mr-2 text-green-500"></i>
+                            <span><strong>repo</strong> - Full control of private repositories</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle mr-2 text-green-500"></i>
+                            <span><strong>read:user</strong> - Read user profile data</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle mr-2 text-green-500"></i>
+                            <span><strong>user:email</strong> - Read user email addresses</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Connection -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">
+                <i class="fas fa-plug mr-3"></i>
+                Test Your Connection
+            </h2>
+            
+            <div class="space-y-4">
+                <p class="text-gray-600">
+                    Once you've configured your GitHub OAuth app, test the connection:
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Local Test -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-semibold mb-3 text-gray-700">
+                            <i class="fas fa-laptop-code mr-2"></i>
+                            Local Development Test
+                        </h4>
+                        <ol class="list-decimal pl-5 text-gray-600 space-y-2 text-sm">
+                            <li>Start the server: <code class="bg-gray-100 px-2 py-1 rounded">python server.py</code></li>
+                            <li>Open: <code class="bg-gray-100 px-2 py-1 rounded">http://localhost:3000/dashboard.html</code></li>
+                            <li>Click "Connect GitHub" button</li>
+                            <li>Authorize the application in GitHub</li>
+                            <li>You'll be redirected back to ASTRA</li>
+                        </ol>
+                    </div>
+
+                    <!-- Production Test -->
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <h4 class="font-semibold mb-3 text-gray-700">
+                            <i class="fas fa-globe mr-2"></i>
+                            Production Test
+                        </h4>
+                        <ol class="list-decimal pl-5 text-gray-600 space-y-2 text-sm">
+                            <li>Deploy to Vercel with environment variables</li>
+                            <li>Open: <code class="bg-gray-100 px-2 py-1 rounded">https://astra-website-vercel-test.vercel.app/dashboard.html</code></li>
+                            <li>Click "Connect GitHub" button</li>
+                            <li>Authorize the application in GitHub</li>
+                            <li>You'll see your connected repositories</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Quick Test Button -->
+                <div class="mt-6">
+                    <a href="/dashboard.html" 
+                       class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-rocket mr-3"></i>
+                        Go to Dashboard to Test Connection
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 pt-8 border-t border-gray-200 text-center text-gray-500">
+            <p>
+                <i class="fas fa-question-circle mr-2"></i>
+                Need help? Check the 
+                <a href="https://docs.github.com/en/developers/apps/building-oauth-apps/creating-an-oauth-app" 
+                   target="_blank" class="text-blue-600 hover:text-blue-800">
+                    GitHub OAuth Documentation
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function showAppDetails() {
+            const section = document.getElementById('appDetails');
+            section.classList.toggle('hidden');
+            if (!section.classList.contains('hidden')) {
+                document.getElementById('credentials').classList.add('hidden');
+            }
+        }
+
+        function showCredentials() {
+            const section = document.getElementById('credentials');
+            section.classList.toggle('hidden');
+            if (!section.classList.contains('hidden')) {
+                document.getElementById('appDetails').classList.add('hidden');
+            }
+        }
+
+        function copyText(text, button) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Visual feedback
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to

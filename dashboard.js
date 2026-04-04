@@ -1,6 +1,23 @@
 // Dashboard JavaScript for ASTRA Security
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Handle URL parameters for CLI setup
+    const urlParams = new URLSearchParams(window.location.search);
+    const authId = urlParams.get('authId');
+    const projectName = urlParams.get('project');
+    const setupMode = urlParams.get('setup');
+    const source = urlParams.get('source');
+    
+    if (authId && projectName && setupMode === 'true' && source === 'cli') {
+        console.log('CLI setup detected:', { authId, projectName });
+        // Store the CLI auth ID for later use
+        localStorage.setItem('astra-cli-auth-id', authId);
+        localStorage.setItem('astra-cli-project', projectName);
+        
+        // Show a notification
+        showNotification(`Project "${projectName}" is ready to connect! Please log in or register to complete setup.`, 'info');
+    }
+    
     // Theme toggle
     const themeBtn = document.querySelector('.theme-btn');
     const themeIcon = themeBtn.querySelector('i');
@@ -146,9 +163,43 @@ function loadDashboardData() {
 // Load projects list
 function loadProjects() {
     const authToken = localStorage.getItem('astra-auth-token');
+    const cliAuthId = localStorage.getItem('astra-cli-auth-id');
     
-    if (!authToken) return;
-    
+    // If we have CLI authId, use CLI endpoint
+    if (cliAuthId) {
+        // Fetch projects via CLI endpoint
+        fetch(`/api/cli/projects?authId=${encodeURIComponent(cliAuthId)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch CLI projects');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.projects) {
+                renderProjectsList(data.projects);
+                // Show CLI mode indicator
+                showNotification(`Viewing projects for CLI auth ID: ${cliAuthId}`, 'info');
+            } else {
+                throw new Error(data.error || 'Failed to load CLI projects');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading CLI projects:', error);
+            // Fall back to regular auth if available
+            if (authToken) {
+                loadProjectsWithAuth(authToken);
+            }
+        });
+    } else if (authToken) {
+        // Use regular authentication
+        loadProjectsWithAuth(authToken);
+    } else {
+        return; // No authentication available
+    }
+}
+
+function loadProjectsWithAuth(authToken) {
     // Fetch projects
     fetch('/api/projects/list', {
         headers: {

@@ -10,12 +10,32 @@ import json
 import os
 import sqlite3
 import uuid
-from datetime import datetime
-from urllib.parse import urlparse, parse_qs
+import requests
+import secrets
+from datetime import datetime, timedelta
+from urllib.parse import urlparse, parse_qs, quote
 import threading
+import hashlib
+import hmac
+import base64
 
 # Database setup
 DB_PATH = 'astra_auth.db'
+
+# GitHub OAuth Configuration
+# Set these in environment variables or replace with your values
+GITHUB_CLIENT_ID = os.environ.get('GITHUB_CLIENT_ID', 'your_client_id_here')
+GITHUB_CLIENT_SECRET = os.environ.get('GITHUB_CLIENT_SECRET', 'your_client_secret_here')
+GITHUB_CALLBACK_URL = os.environ.get('GITHUB_CALLBACK_URL', 'http://localhost:8080/api/auth/github/callback')
+SESSION_SECRET = os.environ.get('SESSION_SECRET', secrets.token_hex(32))
+
+# GitHub API endpoints
+GITHUB_AUTH_URL = 'https://github.com/login/oauth/authorize'
+GITHUB_TOKEN_URL = 'https://github.com/login/oauth/access_token'
+GITHUB_API_URL = 'https://api.github.com'
+
+# Required scopes for ASTRA
+GITHUB_SCOPES = 'repo read:user user:email'
 
 def init_db():
     """Initialize the SQLite database for authentication"""
@@ -78,6 +98,88 @@ def init_db():
         )
     ''')
     
+    # Create API keys table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS api_keys (
+            id TEXT PRIMARY KEY,
+            user_id TEXT,
+            project_id TEXT,
+            key TEXT UNIQUE,
+            name TEXT,
+            description TEXT,
+            permissions TEXT,  -- JSON array of permissions
+            created_at TIMESTAMP,
+            last_used TIMESTAMP,
+            expires_at TIMESTAMP,
+            is_active BOOLEAN DEFAULT 1,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (project_id) REFERENCES projects (id)
+        )
+    ''')
+    
+    # Create GitHub connections table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS github_connections (
+            id TEXT PRIMARY KEY,
+            user_id TEXT,
+            github_user_id INTEGER UNIQUE,
+            github_username TEXT,
+            github_email TEXT,
+            access_token TEXT,
+            refresh_token TEXT,
+            token_expires_at TIMESTAMP,
+            scopes TEXT,  -- JSON array of granted scopes
+            created_at TIMESTAMP,
+            updated_at TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )
+    ''')
+    
+    # Create GitHub repositories table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS github_repositories (
+            id TEXT PRIMARY KEY,
+            github_connection_id TEXT,
+            repo_id INTEGER,
+            repo_name TEXT,
+            repo_full_name TEXT,
+            repo_private BOOLEAN,
+            repo_url TEXT,
+            repo_html_url TEXT,
+            is_astra_installed BOOLEAN DEFAULT 0,
+            installed_at TIMESTAMP,
+            last_synced TIMESTAMP,
+            FOREIGN KEY (github_connection_id) REFERENCES github_connections (id)
+        )
+    ''')
+    
+    # Create OAuth states table for CSRF protection
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS oauth_states (
+            state TEXT PRIMARY KEY,
+            user_id TEXT,
+            redirect_url TEXT,
+            created_at TIMESTAMP,
+            expires_at TIMESTAMP
+        )
+    ''')
+    
+    # Create analytics table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS analytics (
+            id TEXT PRIMARY KEY,
+            api_key_id TEXT,
+            project_id TEXT,
+            session_id TEXT,
+            event_type TEXT,
+            event_data TEXT,  -- JSON data
+            timestamp TIMESTAMP,
+            processed BOOLEAN DEFAULT 0,
+            FOREIGN KEY (api_key_id) REFERENCES api_keys (id),
+            FOREIGN KEY (project_id) REFERENCES projects (id)
+        )
+    ''')
+    
     # Insert demo user if not exists
     c.execute('''
         INSERT OR IGNORE INTO users (id, email, name, created_at, last_login)
@@ -122,6 +224,19 @@ class AstraRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_dashboard_stats()
         elif parsed_path.path == '/api/projects/list':
             self.handle_projects_list()
+        elif parsed_path.path == '/api/cli/projects':
+            self.handle_cli_projects(parsed_path)
+        # GitHub OAuth endpoints
+        elif parsed_path.path == '/api/auth/github':
+            self.handle_github_auth_start(parsed_path)
+        elif parsed_path.path == '/api/auth/github/callback':
+            self.handle_github_auth_callback(parsed_path)
+        elif parsed_path.path == '/api/auth/github/status':
+            self.handle_github_status(parsed_path)
+        elif parsed_path.path == '/api/github/repositories':
+            self.handle_github_repositories(parsed_path)
+        elif parsed_path.path == '/api/auth/github/disconnect':
+            self.handle_github_disconnect(parsed_path)
         else:
             # Serve static files
             super().do_GET()
@@ -136,6 +251,8 @@ class AstraRequestHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_auth_confirm()
         elif parsed_path.path == '/api/projects/create':
             self.handle_project_create()
+        elif parsed_path.path == '/api/cli/connect':
+            self.handle_cli_connect()
         else:
             self.send_error(404, "Endpoint not found")
     
@@ -638,6 +755,416 @@ class AstraRequestHandler(http.server.SimpleHTTPRequestHandler):
         
         self.send_json_response(response, 201)
     
+    def handle_cli_connect(self):
+        """Handle CLI project connection request"""
+        # Read request body
+        content_length = int(self.headers.get('Content-Length', 0))
+        if content_length == 0:
+            self.send_json_response({'error': 'Empty request body'}, 400)
+            return
+        
+        body = self.rfile.read(content_length)
+        try:
+            data = json.loads(body.decode('utf-8'))
+        except json.JSONDecodeError:
+            self.send_json_response({'error': 'Invalid JSON'}, 400)
+            return
+        
+        # Validate required fields
+        if 'authId' not in data:
+            self.send_json_response({'error': 'Missing authId'}, 400)
+            return
+        
+        if 'project' not in data:
+            self.send_json_response({'error': 'Missing project name'}, 400)
+            return
+        
+        auth_id = data['authId']
+        project_name = data['project']
+        project_path = data.get('projectPath', '')
+        project_version = data.get('projectVersion', '1.0.0')
+        project_description = data.get('projectDescription', '')
+        
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        # Check if auth ID already exists
+        c.execute('SELECT * FROM projects WHERE auth_id = ?', (auth_id,))
+        existing = c.fetchone()
+        
+        if existing:
+            # Update existing project
+            c.execute('''
+                UPDATE projects 
+                SET name = ?, description = ?, path = ?, status = 'connected', connected_at = ?
+                WHERE auth_id = ?
+            ''', (project_name, project_description, project_path, datetime.now().isoformat(), auth_id))
+            project_id = existing[0]
+        else:
+            # Create new project entry
+            project_id = str(uuid.uuid4())
+            c.execute('''
+                INSERT INTO projects (id, auth_id, name, description, path, status, created_at, connected_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                project_id, auth_id, project_name, project_description, project_path, 
+                'connected', datetime.now().isoformat(), datetime.now().isoformat()
+            ))
+        
+        conn.commit()
+        conn.close()
+        
+        self.send_json_response({
+            'success': True,
+            'projectId': project_id,
+            'authId': auth_id,
+            'message': f'Project "{project_name}" connected successfully'
+        })
+    
+    def handle_cli_projects(self, parsed_path):
+        """Handle CLI projects list request"""
+        # Parse query parameters
+        query_params = parse_qs(parsed_path.query)
+        auth_id = query_params.get('authId', [None])[0]
+        
+        if not auth_id:
+            self.send_json_response({'error': 'Missing authId parameter'}, 400)
+            return
+        
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        # Get projects for this authId
+        c.execute('SELECT * FROM projects WHERE auth_id = ? ORDER BY connected_at DESC', (auth_id,))
+        projects = c.fetchall()
+        
+        conn.close()
+        
+        # Format projects
+        formatted_projects = []
+        for project in projects:
+            formatted_projects.append({
+                'id': project[0],
+                'authId': project[1],
+                'name': project[2],
+                'description': project[3],
+                'path': project[4],
+                'status': project[5],
+                'createdAt': project[6],
+                'connectedAt': project[7]
+            })
+        
+        self.send_json_response({
+            'success': True,
+            'authId': auth_id,
+            'projects': formatted_projects
+        })
+    
+    # ========== GitHub OAuth Methods ==========
+    
+    def handle_github_auth_start(self, parsed_path):
+        """Start GitHub OAuth flow"""
+        query = parse_qs(parsed_path.query)
+        auth_id = query.get('authId', [None])[0]
+        
+        if not auth_id:
+            self.send_json_response({'error': 'Missing authId parameter'}, 400)
+            return
+        
+        # Generate state for CSRF protection
+        state = secrets.token_urlsafe(32)
+        
+        # Store state in database
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        expires_at = datetime.now() + timedelta(minutes=10)
+        
+        c.execute('''
+            INSERT OR REPLACE INTO oauth_states (state, user_id, redirect_url, created_at, expires_at)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (state, auth_id, '/dashboard', datetime.now().isoformat(), expires_at.isoformat()))
+        
+        conn.commit()
+        conn.close()
+        
+        # Build GitHub OAuth URL
+        params = {
+            'client_id': GITHUB_CLIENT_ID,
+            'redirect_uri': GITHUB_CALLBACK_URL,
+            'scope': GITHUB_SCOPES,
+            'state': state,
+            'allow_signup': 'true'
+        }
+        
+        auth_url = f"{GITHUB_AUTH_URL}?" + "&".join([f"{k}={quote(v)}" for k, v in params.items()])
+        
+        self.send_json_response({
+            'success': True,
+            'auth_url': auth_url,
+            'state': state
+        })
+    
+    def handle_github_auth_callback(self, parsed_path):
+        """Handle GitHub OAuth callback"""
+        query = parse_qs(parsed_path.query)
+        code = query.get('code', [None])[0]
+        state = query.get('state', [None])[0]
+        
+        if not code or not state:
+            self.send_error(400, "Missing code or state parameter")
+            return
+        
+        # Verify state
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        c.execute('SELECT * FROM oauth_states WHERE state = ? AND expires_at > ?', 
+                 (state, datetime.now().isoformat()))
+        state_record = c.fetchone()
+        
+        if not state_record:
+            conn.close()
+            self.send_error(400, "Invalid or expired state")
+            return
+        
+        auth_id = state_record[1]
+        
+        # Exchange code for access token
+        token_data = {
+            'client_id': GITHUB_CLIENT_ID,
+            'client_secret': GITHUB_CLIENT_SECRET,
+            'code': code,
+            'redirect_uri': GITHUB_CALLBACK_URL,
+            'state': state
+        }
+        
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.post(GITHUB_TOKEN_URL, json=token_data, headers=headers)
+            response.raise_for_status()
+            token_response = response.json()
+            
+            access_token = token_response.get('access_token')
+            if not access_token:
+                raise ValueError("No access token in response")
+            
+            # Get user info from GitHub
+            user_headers = {
+                'Authorization': f'token {access_token}',
+                'Accept': 'application/vnd.github.v3+json'
+            }
+            
+            # Get user profile
+            user_response = requests.get(f'{GITHUB_API_URL}/user', headers=user_headers)
+            user_response.raise_for_status()
+            user_data = user_response.json()
+            
+            # Get user emails
+            emails_response = requests.get(f'{GITHUB_API_URL}/user/emails', headers=user_headers)
+            emails_response.raise_for_status()
+            emails_data = emails_response.json()
+            
+            # Find primary email
+            primary_email = None
+            for email in emails_data:
+                if email.get('primary') and email.get('verified'):
+                    primary_email = email.get('email')
+                    break
+            
+            if not primary_email:
+                primary_email = user_data.get('email')
+            
+            # Store GitHub connection
+            github_id = str(uuid.uuid4())
+            now = datetime.now().isoformat()
+            
+            c.execute('''
+                INSERT OR REPLACE INTO github_connections 
+                (id, user_id, github_user_id, github_username, github_email, access_token, 
+                 scopes, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                github_id,
+                auth_id,
+                user_data['id'],
+                user_data['login'],
+                primary_email,
+                access_token,
+                json.dumps(token_response.get('scope', '').split(',')),
+                now,
+                now
+            ))
+            
+            # Clean up used state
+            c.execute('DELETE FROM oauth_states WHERE state = ?', (state,))
+            
+            conn.commit()
+            conn.close()
+            
+            # Redirect to dashboard with success
+            self.send_response(302)
+            self.send_header('Location', f'/dashboard?authId={auth_id}&github_connected=1')
+            self.end_headers()
+            
+        except Exception as e:
+            conn.close()
+            print(f"GitHub OAuth error: {e}")
+            self.send_error(500, f"GitHub authentication failed: {str(e)}")
+    
+    def handle_github_status(self, parsed_path):
+        """Check GitHub connection status"""
+        query = parse_qs(parsed_path.query)
+        auth_id = query.get('authId', [None])[0]
+        
+        if not auth_id:
+            self.send_json_response({'error': 'Missing authId parameter'}, 400)
+            return
+        
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        c.execute('''
+            SELECT id, github_username, github_email, created_at, updated_at
+            FROM github_connections 
+            WHERE user_id = ?
+        ''', (auth_id,))
+        
+        connection = c.fetchone()
+        conn.close()
+        
+        if connection:
+            self.send_json_response({
+                'connected': True,
+                'github_username': connection[1],
+                'github_email': connection[2],
+                'connected_at': connection[3],
+                'last_updated': connection[4]
+            })
+        else:
+            self.send_json_response({
+                'connected': False,
+                'message': 'GitHub account not connected'
+            })
+    
+    def handle_github_repositories(self, parsed_path):
+        """List user's GitHub repositories"""
+        query = parse_qs(parsed_path.query)
+        auth_id = query.get('authId', [None])[0]
+        
+        if not auth_id:
+            self.send_json_response({'error': 'Missing authId parameter'}, 400)
+            return
+        
+        # Get GitHub access token
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        c.execute('SELECT access_token FROM github_connections WHERE user_id = ?', (auth_id,))
+        token_record = c.fetchone()
+        
+        if not token_record:
+            conn.close()
+            self.send_json_response({'error': 'GitHub account not connected'}, 401)
+            return
+        
+        access_token = token_record[0]
+        conn.close()
+        
+        # Fetch repositories from GitHub API
+        headers = {
+            'Authorization': f'token {access_token}',
+            'Accept': 'application/vnd.github.v3+json'
+        }
+        
+        try:
+            # Get all repositories (including private ones)
+            repos = []
+            page = 1
+            
+            while True:
+                response = requests.get(
+                    f'{GITHUB_API_URL}/user/repos',
+                    headers=headers,
+                    params={'page': page, 'per_page': 100, 'sort': 'updated'}
+                )
+                response.raise_for_status()
+                
+                page_repos = response.json()
+                if not page_repos:
+                    break
+                    
+                repos.extend(page_repos)
+                page += 1
+                
+                # Limit to first 3 pages (300 repos) for performance
+                if page > 3:
+                    break
+            
+            # Format repositories
+            formatted_repos = []
+            for repo in repos:
+                formatted_repos.append({
+                    'id': repo['id'],
+                    'name': repo['name'],
+                    'full_name': repo['full_name'],
+                    'private': repo['private'],
+                    'html_url': repo['html_url'],
+                    'description': repo['description'],
+                    'language': repo['language'],
+                    'stars': repo['stargazers_count'],
+                    'forks': repo['forks_count'],
+                    'updated_at': repo['updated_at'],
+                    'is_astra_installed': False  # Will check from database later
+                })
+            
+            self.send_json_response({
+                'success': True,
+                'repositories': formatted_repos,
+                'count': len(formatted_repos)
+            })
+            
+        except Exception as e:
+            print(f"GitHub API error: {e}")
+            self.send_json_response({
+                'error': f'Failed to fetch repositories: {str(e)}'
+            }, 500)
+    
+    def handle_github_disconnect(self, parsed_path):
+        """Disconnect GitHub account"""
+        query = parse_qs(parsed_path.query)
+        auth_id = query.get('authId', [None])[0]
+        
+        if not auth_id:
+            self.send_json_response({'error': 'Missing authId parameter'}, 400)
+            return
+        
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        
+        # Delete GitHub connection
+        c.execute('DELETE FROM github_connections WHERE user_id = ?', (auth_id,))
+        # Also delete associated repositories
+        c.execute('''
+            DELETE FROM github_repositories 
+            WHERE github_connection_id IN (
+                SELECT id FROM github_connections WHERE user_id = ?
+            )
+        ''', (auth_id,))
+        
+        deleted_count = conn.total_changes
+        conn.commit()
+        conn.close()
+        
+        self.send_json_response({
+            'success': True,
+            'message': 'GitHub account disconnected',
+            'deleted': deleted_count
+        })
+    
     def send_json_response(self, data, status_code=200):
         """Send JSON response"""
         self.send_response(status_code)
@@ -686,6 +1213,12 @@ def start_server(port=8080):
         print("  GET  /api/projects/list               - List projects (Bearer token)")
         print("  POST /api/auth/register               - Register new project")
         print("  POST /api/auth/confirm                - Confirm connection")
+        print("\nGitHub OAuth endpoints:")
+        print("  GET  /api/auth/github?authId=<id>     - Start GitHub OAuth flow")
+        print("  GET  /api/auth/github/callback        - GitHub OAuth callback")
+        print("  GET  /api/auth/github/status?authId=<id> - Check GitHub connection")
+        print("  GET  /api/github/repositories?authId=<id> - List user's repositories")
+        print("  GET  /api/auth/github/disconnect?authId=<id> - Disconnect GitHub")
         print("  POST /api/projects/create             - Create new project (Bearer token)")
         print("\nPress Ctrl+C to stop the server")
         

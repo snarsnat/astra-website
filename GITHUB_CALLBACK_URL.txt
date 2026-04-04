@@ -1,0 +1,31 @@
+# GitHub OAuth Callback URL for ASTRA
+
+## For GitHub OAuth App Registration:
+
+### Local Development:
+http://localhost:8080/api/auth/github/callback
+
+### Production (Vercel):
+https://astra-website-vercel-test.vercel.app/api/auth/github/callback
+
+## Steps:
+1. Go to: https://github.com/settings/developers
+2. Click "New OAuth App"
+3. Fill in:
+   - Application name: ASTRA Security Scanner
+   - Homepage URL: https://astra-website-vercel-test.vercel.app
+   - Authorization callback URL: http://localhost:8080/api/auth/github/callback
+4. Get Client ID and Client Secret
+5. Update server.py with your credentials
+
+## Permissions requested:
+- repo (read/write access to repositories)
+- read:user (read user profile)
+- user:email (read user email)
+
+## After setup:
+1. Start server: python server.py
+2. Open: http://localhost:8080/dashboard.html
+3. Click "Connect GitHub" button
+4. Authorize in GitHub
+5. Select repositories for scanning

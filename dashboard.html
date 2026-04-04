@@ -83,31 +83,26 @@
  <!-- Bottom right corner -->
  <div class="absolute bottom-0 right-0 w-16 h-16 border-r-4 border-b-4 border-black"></div>
 
- <!-- PlugZap Icon -->
+ <!-- GitHub Icon -->
  <div class="flex justify-center mb-6">
- <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="w-20 h-20 text-gray-400">
- <!-- Plug body -->
- <path d="M10 2v7.31"></path>
- <path d="M14 9.3V2"></path>
- <path d="M8.5 2h7"></path>
- <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
- <!-- Lightning bolt -->
- <path d="M12 12v4"></path>
- <path d="m9 14 3-3 3 3"></path>
+ <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="currentColor" class="w-20 h-20 text-gray-800">
+ <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
  </svg>
  </div>
 
  <h1 class="text-5xl font-bold text-gray-900">
- You have no connected apps!
+ Connect Your GitHub
  </h1>
 
  <p class="text-lg text-gray-600">
- connect an app to start securing it with astra
+ Securely connect your GitHub repositories with read & write permissions
  </p>
 
- <button id="connect-btn" class="mt-8 px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 mx-auto">
- <span class="text-xl">+</span>
- Connect
+ <button id="connect-github-btn" class="mt-8 px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center gap-2 mx-auto">
+ <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+ <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+ </svg>
+ Connect GitHub
  </button>
  </div>
  </div>
@@ -121,8 +116,86 @@
  </div>
  
  <div class="space-y-6">
+ <!-- GitHub Connection Option -->
+ <div id="github-connection" class="step">
+ <h3 class="text-lg font-semibold mb-3">Connect GitHub Account</h3>
+ <p class="text-gray-600 mb-4">Connect your GitHub account with read & write repository permissions to scan and secure repositories directly from GitHub.</p>
+ 
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+ <div class="border border-gray-300 rounded-lg p-4 hover:border-black transition-colors cursor-pointer" id="github-option">
+ <div class="flex items-center gap-3">
+ <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+ <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="text-gray-800">
+ <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+ </svg>
+ </div>
+ <div>
+ <h4 class="font-medium">GitHub</h4>
+ <p class="text-sm text-gray-500">Connect GitHub account</p>
+ </div>
+ </div>
+ </div>
+ 
+ <div class="border border-gray-300 rounded-lg p-4 hover:border-black transition-colors cursor-pointer" id="local-option">
+ <div class="flex items-center gap-3">
+ <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+ <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600">
+ <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+ <polyline points="14 2 14 8 20 8"></polyline>
+ <line x1="16" y1="13" x2="8" y2="13"></line>
+ <line x1="16" y1="17" x2="8" y2="17"></line>
+ <polyline points="10 9 9 9 8 9"></polyline>
+ </svg>
+ </div>
+ <div>
+ <h4 class="font-medium">Local Project</h4>
+ <p class="text-sm text-gray-500">Connect local directory</p>
+ </div>
+ </div>
+ </div>
+ </div>
+ 
+ <div id="github-connect-section" class="hidden">
+ <div class="mb-4">
+ <h4 class="font-medium mb-2">GitHub Permissions</h4>
+ <p class="text-sm text-gray-600 mb-3">Astra needs the following permissions:</p>
+ <ul class="text-sm text-gray-600 space-y-1 mb-4">
+ <li class="flex items-center gap-2">
+ <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+ <polyline points="20 6 9 17 4 12"></polyline>
+ </svg>
+ <span>Read access to repositories</span>
+ </li>
+ <li class="flex items-center gap-2">
+ <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+ <polyline points="20 6 9 17 4 12"></polyline>
+ </svg>
+ <span>Write access to security reports</span>
+ </li>
+ <li class="flex items-center gap-2">
+ <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500">
+ <polyline points="20 6 9 17 4 12"></polyline>
+ </svg>
+ <span>Access to vulnerability alerts</span>
+ </li>
+ </ul>
+ </div>
+ 
+ <button id="connect-github-popup-btn" class="w-full px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
+ Connect GitHub Account
+ </button>
+ </div>
+ 
+ <div id="local-connect-section" class="hidden">
+ <p class="text-sm text-gray-600 mb-4">Continue with local project setup:</p>
+ <button id="continue-local-btn" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+ Continue with Local Setup
+ </button>
+ </div>
+ </div>
+
  <!-- Step 1: Install -->
- <div id="step-1" class="step">
+ <div id="step-1" class="step hidden">
  <h3 class="text-lg font-semibold mb-3">Step 1: Install Astra CLI</h3>
  <div class="bg-gray-900 text-gray-100 p-4 rounded-lg font-mono text-sm overflow-x-auto">
  <span class="text-green-400">$</span> npm install -g astra-security
@@ -341,6 +414,67 @@
  </button>
  </div>
  </div>
+
+ <!-- GitHub Integration Card -->
+ <div class="border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow" id="github-card">
+ <div class="flex items-center justify-between mb-4">
+ <div class="flex items-center gap-3">
+ <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+ <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="text-gray-800">
+ <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+ </svg>
+ </div>
+ <div>
+ <h3 class="font-semibold text-lg">GitHub</h3>
+ <p class="text-sm text-gray-500">Connect with read & write repository permissions</p>
+ </div>
+ </div>
+ <span id="github-status" class="px-3 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full">Not Connected</span>
+ </div>
+ 
+ <div class="space-y-3">
+ <div class="flex justify-between">
+ <span class="text-gray-600">Repositories</span>
+ <span id="github-repo-count" class="font-semibold">0</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-gray-600">Last Sync</span>
+ <span id="github-last-sync" class="font-semibold">Never</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-gray-600">Permissions</span>
+ <span id="github-permissions" class="font-semibold text-gray-600">None</span>
+ </div>
+ </div>
+ 
+ <div class="mt-6 pt-6 border-t border-gray-200">
+ <button id="connect-github-btn" class="w-full px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
+ Connect GitHub
+ </button>
+ </div>
+ </div>
+ 
+ <div class="space-y-3">
+ <div class="flex justify-between">
+ <span class="text-gray-600">Security Score</span>
+ <span class="font-semibold">92/100</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-gray-600">Last Scan</span>
+ <span class="font-semibold">2 hours ago</span>
+ </div>
+ <div class="flex justify-between">
+ <span class="text-gray-600">Vulnerabilities</span>
+ <span class="font-semibold text-green-600">0</span>
+ </div>
+ </div>
+ 
+ <div class="mt-6 pt-6 border-t border-gray-200">
+ <button class="w-full px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
+ View Details
+ </button>
+ </div>
+ </div>
  </div>
  </div>
  `;
@@ -398,6 +532,234 @@
  }, 2000);
  }, 2000);
  });
+ 
+ // GitHub Connection Functionality
+ const githubOption = document.getElementById('github-option');
+ const localOption = document.getElementById('local-option');
+ const githubConnectSection = document.getElementById('github-connect-section');
+ const localConnectSection = document.getElementById('local-connect-section');
+ const connectGithubPopupBtn = document.getElementById('connect-github-popup-btn');
+ const continueLocalBtn = document.getElementById('continue-local-btn');
+ const connectGithubBtn = document.getElementById('connect-github-btn');
+ 
+ // GitHub option selection
+ if (githubOption) {
+ githubOption.addEventListener('click', function() {
+ githubOption.classList.add('border-black', 'bg-gray-50');
+ localOption.classList.remove('border-black', 'bg-gray-50');
+ githubConnectSection.classList.remove('hidden');
+ localConnectSection.classList.add('hidden');
+ });
+ }
+ 
+ // Local option selection
+ if (localOption) {
+ localOption.addEventListener('click', function() {
+ localOption.classList.add('border-black', 'bg-gray-50');
+ githubOption.classList.remove('border-black', 'bg-gray-50');
+ localConnectSection.classList.remove('hidden');
+ githubConnectSection.classList.add('hidden');
+ });
+ }
+ 
+ // Continue with local setup
+ if (continueLocalBtn) {
+ continueLocalBtn.addEventListener('click', function() {
+ githubConnectSection.classList.add('hidden');
+ localConnectSection.classList.add('hidden');
+ document.getElementById('step-1').classList.remove('hidden');
+ });
+ }
+ 
+ // Connect GitHub from popup
+ if (connectGithubPopupBtn) {
+ connectGithubPopupBtn.addEventListener('click', function() {
+ // Start GitHub OAuth flow
+ startGitHubOAuth();
+ });
+ }
+ 
+ // Connect GitHub from dashboard card (inside GitHub section)
+ if (connectGithubBtn && document.getElementById('github-section')) {
+ connectGithubBtn.addEventListener('click', function() {
+ // Open popup and select GitHub option
+ popup.classList.remove('translate-y-full');
+ overlay.classList.remove('hidden');
+ document.body.style.overflow = 'hidden';
+ 
+ // Select GitHub option
+ githubOption.click();
+ });
+ }
+ 
+ // Connect GitHub from main empty state button
+ const mainConnectGithubBtn = document.getElementById('connect-github-btn');
+ if (mainConnectGithubBtn && !document.getElementById('github-section')) {
+ mainConnectGithubBtn.addEventListener('click', function() {
+ // Directly start GitHub OAuth flow
+ startGitHubOAuth();
+ });
+ }
+ 
+ // Function to start GitHub OAuth
+ function startGitHubOAuth() {
+ // Get the current hostname for the callback URL
+ const hostname = window.location.hostname;
+ const protocol = window.location.protocol;
+ const port = window.location.port ? ':' + window.location.port : '';
+ 
+ // For Vercel deployment, use the current URL
+ const currentUrl = `${protocol}//${hostname}${port}`;
+ console.log('Starting GitHub OAuth from:', currentUrl);
+ 
+ // Show loading state
+ connectGithubPopupBtn.textContent = 'Redirecting to GitHub...';
+ connectGithubPopupBtn.disabled = true;
+ 
+ // Redirect to GitHub OAuth endpoint
+ // The server will handle the OAuth flow and redirect back
+ window.location.href = '/api/auth/github';
+ }
+ 
+ // Function to handle GitHub OAuth callback
+ function handleGitHubCallback() {
+ const urlParams = new URLSearchParams(window.location.search);
+ const code = urlParams.get('code');
+ const error = urlParams.get('error');
+ 
+ if (error) {
+ console.error('GitHub OAuth error:', error);
+ showNotification('GitHub authorization failed: ' + error, 'error');
+ // Remove the code from URL
+ window.history.replaceState({}, document.title, window.location.pathname);
+ return;
+ }
+ 
+ if (code) {
+ console.log('GitHub authorization code received:', code);
+ showNotification('GitHub authorization successful! Exchanging code for token...', 'success');
+ 
+ // Exchange code for token via our serverless function
+ fetch(`/api/auth/github/callback?code=${code}`)
+ .then(response => response.json())
+ .then(data => {
+ if (data.success) {
+ showNotification(`GitHub connected! Welcome ${data.user.login}`, 'success');
+ // Update UI to show connected state
+ updateGitHubConnectionStatus(data.user);
+ } else {
+ showNotification('Failed to connect GitHub: ' + (data.error || 'Unknown error'), 'error');
+ }
+ // Remove the code from URL
+ window.history.replaceState({}, document.title, window.location.pathname);
+ })
+ .catch(err => {
+ console.error('Error exchanging code:', err);
+ showNotification('Error connecting to GitHub: ' + err.message, 'error');
+ window.history.replaceState({}, document.title, window.location.pathname);
+ });
+ }
+ }
+ 
+ // Function to update GitHub connection status in UI
+ function updateGitHubConnectionStatus(user) {
+ const githubOption = document.getElementById('github-option');
+ const githubConnectSection = document.getElementById('github-connect-section');
+ const connectGithubPopupBtn = document.getElementById('connect-github-popup-btn');
+ 
+ if (githubOption && user) {
+ githubOption.innerHTML = `
+ <div class="flex items-center justify-between">
+ <div class="flex items-center space-x-3">
+ <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+ <img src="${user.avatar_url}" alt="${user.login}" class="w-10 h-10 rounded-full">
+ </div>
+ <div>
+ <h4 class="font-medium">GitHub Connected</h4>
+ <p class="text-sm text-gray-500">${user.login}</p>
+ </div>
+ </div>
+ <span class="text-green-600 font-medium">Connected</span>
+ </div>
+ `;
+ }
+ 
+ if (githubConnectSection) {
+ githubConnectSection.classList.add('hidden');
+ }
+ 
+ if (connectGithubPopupBtn) {
+ connectGithubPopupBtn.textContent = 'Connected to GitHub';
+ connectGithubPopupBtn.disabled = true;
+ connectGithubPopupBtn.classList.add('bg-green-600', 'cursor-default');
+ }
+ }
+ 
+ // Check for GitHub callback on page load
+ document.addEventListener('DOMContentLoaded', function() {
+ handleGitHubCallback();
+ 
+ // Check if we have GitHub connection in localStorage (for demo)
+ const githubUser = localStorage.getItem('github_user');
+ if (githubUser) {
+ try {
+ updateGitHubConnectionStatus(JSON.parse(githubUser));
+ } catch (e) {
+ console.error('Error parsing GitHub user:', e);
+ }
+ }
+ });
+ 
+ // Function to simulate GitHub connection
+ function simulateGitHubConnection() {
+ // Update GitHub card on dashboard
+ const githubStatus = document.getElementById('github-status');
+ const githubRepoCount = document.getElementById('github-repo-count');
+ const githubLastSync = document.getElementById('github-last-sync');
+ const githubPermissions = document.getElementById('github-permissions');
+ const connectGithubBtn = document.getElementById('connect-github-btn');
+ 
+ if (githubStatus) {
+ githubStatus.textContent = 'Connected';
+ githubStatus.classList.remove('bg-gray-100', 'text-gray-800');
+ githubStatus.classList.add('bg-green-100', 'text-green-800');
+ }
+ 
+ if (githubRepoCount) {
+ githubRepoCount.textContent = '12';
+ }
+ 
+ if (githubLastSync) {
+ githubLastSync.textContent = 'Just now';
+ }
+ 
+ if (githubPermissions) {
+ githubPermissions.textContent = 'Read & Write';
+ githubPermissions.classList.remove('text-gray-600');
+ githubPermissions.classList.add('text-green-600');
+ }
+ 
+ if (connectGithubBtn) {
+ connectGithubBtn.textContent = 'Manage Connection';
+ connectGithubBtn.classList.remove('bg-gray-900', 'hover:bg-gray-800');
+ connectGithubBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+ }
+ 
+ // Show success message
+ alert('GitHub account connected successfully! You can now scan your repositories.');
+ }
+ 
+ // Check if GitHub is already connected (for demo purposes)
+ // In a real app, this would check with the backend
+ function checkGitHubConnection() {
+ // For demo, we'll assume not connected initially
+ return false;
+ }
+ 
+ // Initialize GitHub connection check on page load
+ if (checkGitHubConnection()) {
+ simulateGitHubConnection();
+ }
  });
  </script>
 </body>

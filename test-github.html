@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test GitHub OAuth</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 20px; }
+        .btn { background: #24292e; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; }
+        .btn:hover { background: #2c3136; }
+        .info { background: #f0f8ff; border-left: 4px solid #2196f3; padding: 15px; margin: 20px 0; }
+        .url { background: #f5f5f5; padding: 10px; font-family: monospace; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Test GitHub OAuth for ASTRA</h1>
+    
+    <div class="info">
+        <strong>Callback URL to use in GitHub OAuth App:</strong>
+        <div class="url">http://localhost:8080/api/auth/github/callback</div>
+    </div>
+    
+    <button class="btn" onclick="testOAuth()">Test GitHub Connection</button>
+    
+    <div id="result" style="margin-top: 20px;"></div>
+    
+    <script>
+        function testOAuth() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<p>Redirecting to GitHub OAuth...</p>';
+            
+            // Redirect to GitHub OAuth endpoint
+            window.location.href = '/api/auth/github';
+        }
+    </script>
+</body>
+</html>
