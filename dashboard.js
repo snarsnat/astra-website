@@ -1,5 +1,20 @@
 // Dashboard JavaScript for ASTRA Security
 
+// Astra server URL — change this if your server runs elsewhere
+const ASTRA_SERVER = 'http://localhost:3001';
+
+// Dashboard ID — stored in localStorage once set, or passed via URL ?dashboardId=xxx
+function getDashboardId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromUrl = urlParams.get('dashboardId');
+    if (fromUrl) return fromUrl;
+    return localStorage.getItem('astra-dashboard-id');
+}
+
+function setDashboardId(id) {
+    localStorage.setItem('astra-dashboard-id', id);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Handle URL parameters for CLI setup
     const urlParams = new URLSearchParams(window.location.search);
@@ -119,16 +134,16 @@ function loadUserData() {
 
 // Load dashboard statistics
 function loadDashboardData() {
-    const authToken = localStorage.getItem('astra-auth-token');
-    
-    if (!authToken) return;
-    
-    // Fetch dashboard stats
-    fetch('/api/dashboard/stats', {
-        headers: {
-            'Authorization': `Bearer ${authToken}`
-        }
-    })
+    const dashboardId = getDashboardId();
+
+    if (!dashboardId) {
+        console.warn('No dashboard ID found. Creating a default dashboard...');
+        createDefaultDashboard();
+        return;
+    }
+
+    // Fetch dashboard stats from real Astra server
+    fetch(`${ASTRA_SERVER}/api/dashboards/${dashboardId}/stats`)
     .then(response => {
         if (!response.ok) {
             throw new Error('Failed to fetch dashboard stats');
@@ -136,28 +151,83 @@ function loadDashboardData() {
         return response.json();
     })
     .then(data => {
-        // Update stats cards
-        if (data.activeProjects !== undefined) {
-            document.getElementById('active-projects').textContent = data.activeProjects;
+        const stats = data.stats;
+        // Update stats cards with real data
+        if (stats.activeProjects !== undefined) {
+            document.getElementById('active-projects').textContent = stats.activeProjects;
         }
-        
-        if (data.verificationsToday !== undefined) {
-            document.getElementById('verifications-today').textContent = data.verificationsToday.toLocaleString();
+
+        if (stats.verificationsToday !== undefined) {
+            document.getElementById('verifications-today').textContent = stats.verificationsToday.toLocaleString();
         }
-        
-        if (data.blockedThreats !== undefined) {
-            document.getElementById('blocked-threats').textContent = data.blockedThreats;
+
+        if (stats.blockedThreats !== undefined) {
+            document.getElementById('blocked-threats').textContent = stats.blockedThreats;
         }
-        
-        if (data.apiUsage !== undefined) {
-            document.getElementById('api-usage').textContent = `${data.apiUsage}%`;
+
+        if (stats.apiUsage !== undefined) {
+            document.getElementById('api-usage').textContent = `${stats.apiUsage}%`;
         }
     })
     .catch(error => {
         console.error('Error loading dashboard data:', error);
-        // Use mock data for demo
         updateWithMockData();
     });
+}
+
+// Create a default dashboard on the Astra server
+function createDefaultDashboard() {
+    fetch(`${ASTRA_SERVER}/api/dashboards/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'My Astra Dashboard' })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.dashboardId) {
+            setDashboardId(data.dashboardId);
+            console.log('Created dashboard:', data.dashboardId);
+            linkLocalAppsToDashboard(data.dashboardId);
+            loadDashboardData();
+        }
+    })
+    .catch(error => {
+        console.error('Failed to create dashboard:', error);
+        updateWithMockData();
+    });
+}
+
+// Link locally registered apps to the new dashboard
+function linkLocalAppsToDashboard(dashboardId) {
+    fetch(`${ASTRA_SERVER}/api/dashboards/${dashboardId}/apps/link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appName: 'Astra' })
+    }).catch(() => {});
+    fetch(`${ASTRA_SERVER}/api/dashboards/${dashboardId}/apps/link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appName: 'Sound_of_code' })
+    }).catch(() => {});
+}
+
+// Load projects from Astra server dashboard
+function loadProjectsFromAstra(dashboardId) {
+    fetch(`${ASTRA_SERVER}/api/dashboards/${dashboardId}/apps`)
+    .then(response => response.json())
+    .then(data => {
+        const projectList = document.getElementById('project-list');
+        projectList.innerHTML = '';
+        const apps = data.apps || [];
+        if (apps.length === 0) {
+            projectList.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-cube"></i></div><h3 class="empty-state-title">No projects yet</h3><p class="empty-state-description">Create your first project to start using ASTRA security.</p><button class="btn btn-primary" id="create-first-project">Create First Project</button></div>';
+            document.getElementById('create-first-project').addEventListener('click', showNewProjectModal);
+            return;
+        }
+        const projects = apps.map((app, i) => ({ id: `proj_${String(i+1).padStart(3,'0')}`, name: app.appName, status: app.status === 'active' ? 'connected' : 'disconnected', icon: 'fa-shield-alt', connectedAt: new Date(app.linkedAt).toISOString() }));
+        projects.forEach(p => projectList.appendChild(createProjectElement(p)));
+    })
+    .catch(() => showMockProjects());
 }
 
 // Load projects list
@@ -195,7 +265,13 @@ function loadProjects() {
         // Use regular authentication
         loadProjectsWithAuth(authToken);
     } else {
-        return; // No authentication available
+        // Try Astra server dashboard
+        const dashboardId = getDashboardId();
+        if (dashboardId) {
+            loadProjectsFromAstra(dashboardId);
+        } else {
+            return;
+        }
     }
 }
 
